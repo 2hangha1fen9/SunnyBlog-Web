@@ -1,14 +1,8 @@
 import { createStore } from 'vuex'
+import identity from './modules/identity'
 
 export default createStore({
-  state: {
-  },
-  getters: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
-  modules: {
-  }
+    modules: {
+        identity
+    }
 })
