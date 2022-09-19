@@ -6,10 +6,10 @@ function resolve(dir) {
 }
 
 module.exports = defineConfig({
-    transpileDependencies: true,
     lintOnSave: false,
+    transpileDependencies: true,
     devServer: {
-        port: 7070, // 端口号
+        port: 7070,
     },
     pluginOptions: {
         //sass样式加载

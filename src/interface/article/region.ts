@@ -6,6 +6,3 @@ export interface Region {
     status:number
     inverseParent: Array<Region>
 }
-export interface RegionId{
-    id: number
-}

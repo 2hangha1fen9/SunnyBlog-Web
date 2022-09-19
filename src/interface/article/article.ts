@@ -16,11 +16,18 @@ export interface Article {
     regionId: number
     tags: Array<Tag>
     categorys: Array<Category>
+    meta: Meta
     status: number
     isLock: number
     commentStatus: number
     createTime: string
 }
-export interface ArticleId {
-    id: number
+export interface Meta {
+    articleId: number
+    viewCount: number
+    likeCount: number
+    commentCount: number
+    collectionCount: number
+    isUserLike: number
+    isUserCollection: number
 }

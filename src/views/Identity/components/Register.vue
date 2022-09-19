@@ -252,15 +252,17 @@ async function handleSend(form: FormInstance) {
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     overflow: hidden;
+    position: relative;
 }
 .login-btn {
     font-size: 0.3em;
     color: white;
+    background-color: rgba(255, 255, 255, 0.074);
     padding: 5px 15px 5px 15px;
     backdrop-filter: blur(20px);
     border-bottom-left-radius: 10px;
     text-decoration: none;
-    position: fixed;
+    position: absolute;
     top: 0;
     right: 0;
 }

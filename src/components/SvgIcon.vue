@@ -1,7 +1,10 @@
 <template>
-    <svg class="svg-icon" aria-hidden="true">
-        <use :xlink:href="iconName" />
-    </svg>
+    <span>
+        <svg class="svg-icon" aria-hidden="true">
+            <use :xlink:href="iconName" />
+        </svg>
+        <slot></slot>
+    </span>
 </template>
 
 <script setup lang="ts">

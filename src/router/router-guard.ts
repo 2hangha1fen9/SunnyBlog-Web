@@ -7,7 +7,7 @@ import { computed } from 'vue'
 const token = computed(() => store.getters['identity/token'])
 
 //路由白名单
-const whiteList = ['/identity/login', '/identity/register']
+const whiteList = ['/identity/login', '/identity/register', '/']
 
 router.beforeEach(async (to, from, next) => {
     start() //开启进度条

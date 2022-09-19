@@ -53,7 +53,7 @@ service.interceptors.response.use(
                 type: 'warning',
             })
         }
-        else {
+        else if (error.message != "Request failed with status code 400") {
             ElMessage({
                 message: '系统异常，请稍候再试。异常详情：' + error.message,
                 type: 'error',
