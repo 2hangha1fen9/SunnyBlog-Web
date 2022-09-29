@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { getCurrentInstance, nextTick, onBeforeUnmount, onMounted, reactive, ref } from "vue"
+import { getCurrentInstance, nextTick, onBeforeUnmount, onMounted, ref } from "vue"
 import { debounce } from "lodash" //引入防抖节流
 import Vditor from "vditor"
 import "vditor/dist/index.css"

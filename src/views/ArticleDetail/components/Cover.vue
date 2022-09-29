@@ -7,6 +7,7 @@
                 <span>点赞: {{ state?.meta?.likeCount }}</span>
                 <span>收藏: {{ state?.meta?.collectionCount }}</span>
             </p>
+            <el-link @click.stop="jumpRegion(state.regionName)" style="color: white">{{ state.regionName }}</el-link>
         </div>
     </header>
     <header v-else class="pure-cover">
