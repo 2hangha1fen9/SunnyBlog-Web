@@ -5,12 +5,29 @@ import Identity from '@/views/Identity/Identity.vue'
 const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
-        name: 'home',
+        name: 'index',
+        redirect: '/index',
         component: Layout,
         children: [
             {
-                path: '/',
-                component: () => import('@/views/Article/Article.vue'),
+                path: '/index/:region*',
+                meta: {
+                    keepAlive: true
+                },
+                component: () => import('@/views/Index/Index.vue'),
+                props: true
+            }
+        ]
+    },
+    {
+        path: '/article',
+        name: 'article',
+        redirect: '/index',
+        component: Layout,
+        children: [
+            {
+                path: '/article/:aid',
+                component: () => import('@/views/ArticleDetail/ArticleDetail.vue'),
                 props: true
             }
         ]

@@ -1,9 +1,13 @@
 <template>
-    <header class="header-container">
+    <header :class="{ 'header-container': true, 'header-up': !visible }">
         <div class="left-container">
             <svg-icon icon-class="sunny" id="logo" />
             <h3>SunnyBlog</h3>
-            <RegionMenu />
+            <el-menu class="links" mode="horizontal" router :ellipsis="true">
+                <el-menu-item index="/index" style="background: none">首页</el-menu-item>
+                <el-menu-item index="/rank" style="background: none">排行榜</el-menu-item>
+                <el-menu-item index="/rank" style="background: none">开源</el-menu-item>
+            </el-menu>
         </div>
         <div class="right-container">
             <SearchBar />
@@ -18,11 +22,10 @@
 
 <script setup lang="ts">
 import Avatar from "@/components/Avatar.vue"
-import { computed } from "vue"
+import { computed, onMounted, ref } from "vue"
 import { useStore } from "vuex"
 import { useRouter, useRoute } from "vue-router"
 import SearchBar from "./SearchBar.vue"
-import RegionMenu from "./RegionMenu/RegionMenu.vue"
 
 const store = useStore()
 const router = useRouter()
@@ -42,15 +45,32 @@ function toggleState() {
         router.push(`/identity/login?redirect=${route.fullPath}`)
     }
 }
+
+//监视滚动条,顶部header离开可视区域隐藏
+const visible = ref(true)
+function watchScroll() {
+    //变量scrollTop是滚动条滚动时，距离顶部的距离
+    var scrollTop = document.documentElement.scrollTop || document.body.scrollTop
+    if (scrollTop > 60) {
+        visible.value = false
+    } else {
+        visible.value = true
+    }
+}
+
+onMounted(() => {
+    window.addEventListener("scroll", watchScroll)
+})
 </script>
 
-<style scoped>
+<style>
 #logo {
     height: auto;
     width: 35px;
     margin: 10px;
 }
 .header-container {
+    transition: all 0.5s;
     position: sticky;
     top: 0;
     border-bottom: 1px solid rgba(211, 211, 211, 0.626);
@@ -58,19 +78,26 @@ function toggleState() {
     background-size: 4px 4px;
     backdrop-filter: saturate(50%) blur(4px);
     -webkit-backdrop-filter: saturate(50%) blur(4px);
-    height: 60px;
+    min-height: 60px;
     display: flex;
-    padding: 0px 5% 0px 5%;
+    flex-wrap: wrap;
+    overflow: hidden;
     align-items: center;
     justify-content: space-between;
     z-index: 10;
 }
+
 .left-container,
 .right-container {
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+.left-container {
+    flex-grow: 1;
 }
 
 .avatar-container {
@@ -79,5 +106,19 @@ function toggleState() {
 
 .right-container >>> .el-input__wrapper {
     border-radius: 50px;
+}
+
+.header-up {
+    position: fixed;
+    width: 100%;
+    opacity: 1;
+    transform: translateY(-120px);
+}
+
+.links {
+    border-bottom: none;
+    background: none;
+    height: 100%;
+    width: 100%;
 }
 </style>

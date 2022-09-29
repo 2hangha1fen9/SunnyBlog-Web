@@ -1,6 +1,6 @@
 <template>
     <section class="login-form">
-        <router-link to="/identity/register" class="register-btn">注册</router-link>
+        <router-link to="/identity/register" :replace="true" class="register-btn">注册</router-link>
         <el-form :model="loginData" :rules="rules" size="large" ref="loginForm" status-icon @keyup.enter="handleLogin(loginForm)">
             <el-form-item>
                 <h3 style="width: 100%">

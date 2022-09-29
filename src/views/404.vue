@@ -11,7 +11,7 @@
                 <div class="bullshit__oops">OOPS!</div>
                 <div class="bullshit__headline">{{ message }}</div>
                 <div class="bullshit__info">Please check that the URL you entered is correct, or click the button below to return to the homepage.</div>
-                <a @click="router.back()" class="bullshit__return-home">Back</a>
+                <a @click="router.push('/')" class="bullshit__return-home">Back</a>
             </div>
         </div>
     </div>

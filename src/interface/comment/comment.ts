@@ -1,12 +1,12 @@
 export interface Comment {
     id: number
-    articleTitle: string
     articleId: number
     userId: number
-    content: string
+    photo: string
     nick: string
     username: string
-    status: number
+    content: string
     createTime: string
-    isRead: number
+    parentId: number
+    inverseParent: Array<Comment>
 }

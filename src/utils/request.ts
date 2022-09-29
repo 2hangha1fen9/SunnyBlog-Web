@@ -1,5 +1,6 @@
 import axios from 'axios'
 import store from '@/store/index'
+import { start, close } from '@/utils/progress'
 import { ElMessage } from 'element-plus'
 import { computed } from 'vue'
 const token = computed(() => store.getters['identity/token'])
@@ -7,11 +8,12 @@ const token = computed(() => store.getters['identity/token'])
 //创建axios实例
 const service = axios.create({
     baseURL: process.env.VUE_APP_BASE_API, //api网关
-    timeout: 20000 //请求超时时间10s
+    timeout: 100000 //请求超时时间10s
 })
 
 //request拦截器
 service.interceptors.request.use(config => {
+    start()
     //让每一个请求都带上jwt
     if (token.value) {
         if (config && config.headers) {
@@ -38,6 +40,7 @@ service.interceptors.response.use(
             })
             return Promise.reject('error')
         }
+        close()
         return response.data
     },
     error => {
@@ -59,6 +62,7 @@ service.interceptors.response.use(
                 type: 'error',
             })
         }
+        close()
         return Promise.reject(error)
     }
 )

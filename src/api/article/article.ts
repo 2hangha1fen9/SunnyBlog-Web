@@ -13,3 +13,15 @@ export function listArticle(pageIndex?: number | 1, pageSize?: number | 10, cond
         }
     })
 }
+
+//获取文章详情
+export function getArticleDetail(aid:number){
+    return request({
+        url: '/article-service/article/detail',
+        method: 'get',
+        params:{
+            id: aid
+        }
+    })
+}
+

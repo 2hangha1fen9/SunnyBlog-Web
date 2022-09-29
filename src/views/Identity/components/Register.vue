@@ -1,6 +1,6 @@
 <template>
     <section class="register-form">
-        <router-link to="/identity/login" class="login-btn">登录</router-link>
+        <router-link to="/identity/login" :replace="true" class="login-btn">登录</router-link>
         <el-form :model="registerData" size="large" :rules="rules" ref="registerForm" status-icon @keyup.enter="handleRegister(registerForm)">
             <el-form-item>
                 <h3 style="width: 100%">
@@ -40,16 +40,16 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, toRef, watch } from "vue"
+import { reactive, ref, watch } from "vue"
 import { useRouter } from "vue-router"
 import { start, close } from "@/utils/progress"
 import { FormRules, FormInstance, ElMessage } from "element-plus"
 //api
-import { register } from "@/api/identity/register" //登录api
+import { register } from "@/api/user/register" //登录api
 import { sendVerificationCode } from "@/api/identity/vcode" //验证码api
 //接口
 import { Response } from "@/interface/common/response"
-import { RegisterPayload } from "@/interface/identity/register"
+import { RegisterPayload } from "@/interface/user/register"
 import { SendVCode } from "@/interface/identity/vcode"
 
 const router = useRouter()

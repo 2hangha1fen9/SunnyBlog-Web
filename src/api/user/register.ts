@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { RegisterPayload } from '@/interface/identity/register'
+import { RegisterPayload } from '@/interface/user/register'
 //登录
 export function register(data: RegisterPayload) {
     return request({

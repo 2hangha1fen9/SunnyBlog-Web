@@ -1,5 +1,4 @@
 import router from './index'
-import { start, close } from '@/utils/progress'
 import { ElMessage } from 'element-plus'
 import store from '@/store/index'
 import { computed } from 'vue'
@@ -7,28 +6,28 @@ import { computed } from 'vue'
 const token = computed(() => store.getters['identity/token'])
 
 //路由白名单
-const whiteList = ['/identity/login', '/identity/register', '/']
+const whiteList = [/identity/i, /index/i, /article/i, /404/i]
 
 router.beforeEach(async (to, from, next) => {
-    start() //开启进度条
     if (token.value) {
         //如果已经登录了则跳转
         next()
-        close()
     }
     else {
-        if (whiteList.indexOf(to.path) !== -1) {
+        //匹配路径白名单
+        let access = false
+        whiteList.forEach(r => {
+            if (r.test(decodeURIComponent(to.path))) {
+                access = true
+            }
+        })
+        if (access) {
             next()
         } else {
             //清除所有信息跳转到登录页
             await store.dispatch('identity/logout')
-            ElMessage.warning('凭证过期')
+            ElMessage.warning('用户信息已过期,请重新登录')
             next(`/identity/login?redirect=${to.path}`)
-            close()
         }
     }
-})
-
-router.afterEach(() => {
-    close()
 })

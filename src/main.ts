@@ -11,6 +11,16 @@ import '@/router/router-guard'
 //自定义图标
 import SvgIcon from '@/components/SvgIcon.vue'
 import '@/icons'
+//全局事件总线
+import mitt from 'mitt'
+
+//全局事件总线注册
+const Bus = mitt()
+declare module 'vue' {
+    export interface ComponentCustomProperties {
+        $bus: typeof Bus
+    }
+}
 
 const app = createApp(App)
 app.use(store)
@@ -18,4 +28,6 @@ app.use(router)
 app.use(ElementPlus, { locale: zhCn })
 //引入自定义图标组件
 app.component('svg-icon', SvgIcon)
+//挂载全局事件总线
+app.config.globalProperties.$bus = Bus
 app.mount('#app')

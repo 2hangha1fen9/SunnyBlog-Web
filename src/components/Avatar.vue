@@ -1,6 +1,8 @@
 <template>
-    <el-avatar :src="photo" size="default" class="d" />
-    <p class="d" v-if="showUsername">{{ username }}</p>
+    <div>
+        <el-avatar :src="photo" size="default" class="d" />
+        <p class="d" v-if="showUsername">{{ username }}</p>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -18,7 +20,6 @@ defineProps({
         default: true,
     },
 })
-
 </script>
 
 <style>
