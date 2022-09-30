@@ -2,8 +2,6 @@ import axios from 'axios'
 import store from '@/store/index'
 import { start, close } from '@/utils/progress'
 import { ElMessage } from 'element-plus'
-import { computed } from 'vue'
-const token = computed(() => store.getters['identity/token'])
 
 //创建axios实例
 const service = axios.create({
@@ -15,12 +13,10 @@ const service = axios.create({
 service.interceptors.request.use(config => {
     start()
     //让每一个请求都带上jwt
-    if (token.value) {
+    if (store.getters['identity/token']) {
         if (config && config.headers) {
-            config.headers['Authorization'] = `Bearer ${token.value}`
+            config.headers['Authorization'] = `Bearer ${store.getters['identity/token']}`
         }
-    } else {
-        store.dispatch('identity/logout')
     }
 
     return config
@@ -45,9 +41,9 @@ service.interceptors.response.use(
     },
     error => {
         if (error.message == "Request failed with status code 401") {
-            ElMessage({
-                message: '您没有登录',
-                type: 'warning',
+            ElMessage.warning({
+                dangerouslyUseHTMLString: true,
+                message: `登录信息已过期 请重新<a style="color: skyblue" href="/identity/login?immediate=true" target="_blank">登录</a>`,
             })
         }
         else if (error.message == "Request failed with status code 403") {

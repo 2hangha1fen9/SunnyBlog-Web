@@ -1,4 +1,3 @@
-import { Category } from './category'
 import { Tag } from './tag'
 
 export interface Article {
@@ -15,7 +14,8 @@ export interface Article {
     regionName: string
     regionId: number
     tags: Array<Tag>
-    categorys: Array<Category>
+    categoryId: number
+    categoryName: string
     meta: Meta
     status: number
     isLock: number

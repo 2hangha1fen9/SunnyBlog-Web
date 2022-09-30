@@ -56,25 +56,22 @@ function sendComment() {
         return ElMessage.warning("请输入评论内容")
     }
 
-    if (!isLogin.value) {
-        return ElMessage.warning({
-            dangerouslyUseHTMLString: true,
-            message: `登录信息已过期 请重新<a style="color: skyblue" href="/identity/login" target="_blank">登录</a>`,
-        })
-    }
+    // if (!isLogin.value) {
+    //     return ElMessage.warning({
+    //         dangerouslyUseHTMLString: true,
+    //         message: `登录信息已过期 请重新<a style="color: skyblue" href="/identity/login" target="_blank">登录</a>`,
+    //     })
+    // }
 
     btnLoading.value = true
     publishComment(state)
         .then((data: Response<string>) => {
             if (data.status === 200) {
                 ElMessage.success(data.result)
-
                 vditor.value?.setValue("")
                 setTimeout(() => {
                     instance?.proxy?.$bus.emit("listComment", true)
                 }, 500)
-            } else {
-                ElMessage.error(data.message)
             }
         })
         .finally(() => {

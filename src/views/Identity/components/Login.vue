@@ -188,7 +188,12 @@ async function handleLogin(form: FormInstance) {
                 .then((data) => {
                     //存入token
                     store.dispatch("identity/login", data)
-                    router.push({ path: redirect.value || "/" })
+                    if (route.query["immediate"]) {
+                        window.close()
+                    } else {
+                        router.push({ path: redirect.value || "/" })
+                    }
+
                     close()
                     loading.value = false
                 })

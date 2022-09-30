@@ -1,15 +1,12 @@
 import router from './index'
 import { ElMessage } from 'element-plus'
 import store from '@/store/index'
-import { computed } from 'vue'
-
-const token = computed(() => store.getters['identity/token'])
 
 //路由白名单
 const whiteList = [/identity/i, /index/i, /article/i, /404/i]
 
 router.beforeEach(async (to, from, next) => {
-    if (token.value) {
+    if (store.getters['identity/isValid']) {
         //如果已经登录了则跳转
         next()
     }
