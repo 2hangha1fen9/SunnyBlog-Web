@@ -1,7 +1,7 @@
 <template>
-    <div>
+    <div class="avatar">
         <el-avatar :src="photo" size="default" class="d" />
-        <p class="d" v-if="showUsername">{{ username }}</p>
+        <span class="d" v-if="showUsername">{{ username }}</span>
     </div>
 </template>
 
@@ -23,6 +23,10 @@ defineProps({
 </script>
 
 <style>
+.avatar {
+    display: flex;
+    align-items: center;
+}
 .d {
     margin: 5px;
 }

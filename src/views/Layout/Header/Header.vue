@@ -11,6 +11,8 @@
         </div>
         <div class="right-container">
             <SearchBar />
+            <!-- 创作中心 -->
+            <el-button type="primary" @click="router.push('/creation')">创作中心</el-button>
             <!-- 头像 -->
             <p class="avatar-container" v-if="isValid">
                 <Avatar :photo="photo" :username="username" :showUsername="false"></Avatar>

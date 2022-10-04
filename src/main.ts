@@ -30,4 +30,10 @@ app.use(ElementPlus, { locale: zhCn })
 app.component('svg-icon', SvgIcon)
 //挂载全局事件总线
 app.config.globalProperties.$bus = Bus
+//input自动获取焦点
+app.directive('focus', {
+    mounted(el) {
+        el.focus()
+    }
+})
 app.mount('#app')

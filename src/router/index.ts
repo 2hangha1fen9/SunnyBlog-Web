@@ -33,6 +33,11 @@ const routes: Array<RouteRecordRaw> = [
         ]
     },
     {
+        path: '/creation',
+        name: 'creation',
+        component: () => import("@/views/CreationCenter/CreationCenter.vue"),
+    },
+    {
         path: '/identity',
         component: Identity,
         redirect: '/identity/login',

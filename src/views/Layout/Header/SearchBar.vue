@@ -1,5 +1,5 @@
 <template>
-    <el-autocomplete class="searchBar" clearable :suffix-icon="Search" v-model="keyword" :fetch-suggestions="getHistory" placeholder="搜索文章/标签/用户" />
+    <el-autocomplete class="search-bar" clearable :suffix-icon="Search" v-model="keyword" :fetch-suggestions="getHistory" placeholder="搜索文章/标签/用户" />
 </template>
 
 <script setup lang="ts">
@@ -22,8 +22,8 @@ function getHistory(queryString, callback) {
 }
 </script>
 
-<style scoped>
-.searchBar {
+<style>
+.search-bar {
     margin: 15px;
 }
 </style>

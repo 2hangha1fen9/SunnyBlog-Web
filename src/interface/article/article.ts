@@ -31,3 +31,6 @@ export interface Meta {
     isUserLike: number
     isUserCollection: number
 }
+export interface ArticleId {
+    id: number
+}
