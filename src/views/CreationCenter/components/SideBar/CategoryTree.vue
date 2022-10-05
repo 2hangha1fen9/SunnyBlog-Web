@@ -18,9 +18,9 @@
         >
             <template #default="{ data }">
                 <p @click.right="nodeRightClick(data)" class="tree-item">
-                    <SvgIcon :iconClass="data.isArticle ? 'markdown' : 'folder'" />
+                    <SvgIcon :iconClass="data.isArticle ? 'markdown' : 'folder'" :style="data.isArticle && data.status === 1 ? 'color:#409eff' : ''" />
                     <input type="text" class="editorInput" v-model="data.name" v-if="data.isEdit" @keyup.enter="renameNode(data)" @blur="renameNode(data)" v-focus />
-                    <span class="tree-item" v-else>{{ data.name }}</span>
+                    <span class="tree-item" v-else>{{ data.status === 4 ? `${data.name} [草稿]` : data.name }}</span>
                 </p>
             </template>
         </el-tree>
@@ -29,6 +29,7 @@
 
 <script setup lang="ts">
 import { getCurrentInstance, onUnmounted, ref } from "vue"
+import { useRouter } from "vue-router"
 import { ElMessage } from "element-plus"
 import { listCategory, updateCategory, createCategory, deleteCategory } from "@/api/article/category"
 import { deleteArticle, updateArticle, listMyArticle } from "@/api/article/article"
@@ -40,6 +41,7 @@ import type { DropType } from "element-plus/es/components/tree/src/tree.type"
 import SvgIcon from "@/components/SvgIcon.vue"
 import { debounce } from "lodash-es"
 
+const router = useRouter()
 const instance = getCurrentInstance()
 const state = ref<Array<Category>>()
 const categoryTree = ref()
@@ -80,15 +82,15 @@ function getArticleByCategory(cid: number, categoryNode: Category) {
                         name: item.title,
                         userId: item.userId,
                         isArticle: true,
-                        categoryId: item.categoryId,
+                        categoryId: item.categoryId === 0 ? null : item.categoryId,
+                        status: item.status,
                     })
                 }
             })
         } else {
-            //拷贝所有数据
-            let _state = JSON.parse(JSON.stringify(state.value))
+            //拷贝所有数据,防止响应式数据造成重复数据
             //获取需要更新的节点
-            let node = getCategoryNode(categoryNode.id, _state)
+            let node = getCategoryNode(categoryNode.id, JSON.parse(JSON.stringify(state.value)))
 
             node.inverseParent = node.inverseParent.filter((item: Category) => {
                 return !item.isArticle
@@ -101,11 +103,12 @@ function getArticleByCategory(cid: number, categoryNode: Category) {
                         name: item.title,
                         userId: item.userId,
                         isArticle: true,
-                        categoryId: item.categoryId,
+                        categoryId: item.categoryId === 0 ? null : item.categoryId,
+                        status: item.status,
                     })
                 }
             })
-
+            //更新目录树
             categoryTree.value.updateKeyChildren(categoryNode.id, JSON.parse(JSON.stringify(node.inverseParent)))
         }
     })
@@ -114,11 +117,20 @@ function getArticleByCategory(cid: number, categoryNode: Category) {
 //展开节点
 const expandArticle = debounce(function (categoryNode: Category, node: Node) {
     if (!categoryNode.isArticle && !node.expanded) {
-        getArticleByCategory(categoryNode.id, categoryNode).then(() => {
-            node.expanded = true
-        })
+        node.expanded = true
+        getArticleByCategory(categoryNode.id, categoryNode)
     } else {
         node.expanded = false
+    }
+
+    //如果点击为文章展示文章编辑
+    if (categoryNode.isArticle) {
+        router.replace({
+            query: {
+                articleId: categoryNode.id.replace("a-", ""),
+                isEdit: 1,
+            },
+        })
     }
 }, 100)
 
@@ -143,7 +155,7 @@ function getCategoryNode(cid: string, categorys: Array<Category>): Category {
 
 //检测节点是否可以拖拽
 function dropCheck(draggingNode, dropNode, type) {
-    if ((draggingNode.data.isArticle && dropNode.data.isArticle && type === "inner") || (!draggingNode.data.isArticle && dropNode.data.isArticle && type === "inner")) {
+    if ((draggingNode.data.isArticle && dropNode.data.isArticle && type === "inner") || (!draggingNode.data.isArticle && dropNode.data.isArticle && type === "inner") || draggingNode.data.id === dropNode.data.id) {
         return false
     } else {
         return true
@@ -152,29 +164,31 @@ function dropCheck(draggingNode, dropNode, type) {
 
 //拖入结束事件
 const dragEnd = debounce(function (draggingNode: Node, dropNode: Node, dropType: DropType) {
-    //当被拖拽节点为文档,并且进入节点为分类时触发文章分类修改
+    //当被拖拽节点为文档,并且进入节点为目录时触发文章目录修改
     if (draggingNode.data?.isArticle) {
         let cid = null
         if (dropType === "inner") {
-            //拖到目录上分类id为目标节点id
+            //拖到目录上id为目标节点id
             cid = dropNode.data.id
         } else if (dropNode.data.isArticle) {
-            //拖动到某个目录同级元素目标为同级的分类id
+            //拖动到某个目录同级元素目标为同级的文章目录id
             cid = dropNode.data.categoryId
+        } else if (!dropNode.data.isArticle) {
+            //拖动到某个目录同级元素目标为同级的目录id
+            cid = dropNode.data.parentId
         }
 
-        if (cid !== null) {
-            updateArticle({
-                id: draggingNode.data.id.replace("a-", ""),
-                categoryId: cid,
-            }).then((data: Response<string>) => {
-                if (data.status !== 200) {
-                    ElMessage.warning(data.message)
-                }
-            })
-        }
+        updateArticle({
+            id: draggingNode.data.id.replace("a-", ""),
+            categoryId: cid,
+        }).then((data: Response<string>) => {
+            if (data.status !== 200) {
+                ElMessage.warning(data.message)
+            }
+            instance?.proxy?.$bus.emit("updateCategory", cid)
+        })
     }
-    //当拖拽节点为文件夹时触发分类修改操作
+    //当拖拽节点为文件夹时触发目录修改操作
     else {
         let pid = null
         if (dropType === "inner") {
@@ -212,6 +226,9 @@ function renameNode(node: Category) {
         }).then((data: Response<string>) => {
             if (data.status !== 200) {
                 ElMessage.warning(data.message)
+            } else {
+                //如果编辑器上为当前修改的文章则同步修改
+                instance?.proxy?.$bus.emit("updateArticleName", { aid: node.id.replace("a-", ""), name: node.name })
             }
         })
     } else if (!node.isArticle) {
@@ -230,7 +247,6 @@ function renameNode(node: Category) {
 //删除节点
 instance?.proxy?.$bus.on("deleteNode", deleteNode)
 function deleteNode(node: Category) {
-    debugger
     if (!node.isArticle) {
         if (node.inverseParent.length <= 0) {
             deleteCategory(node.id).then((data: Response<string>) => {
@@ -253,6 +269,8 @@ function deleteNode(node: Category) {
             if (data.status === 200) {
                 ElMessage.success(data.message)
                 categoryTree.value.remove(node)
+                //如果当前编辑器是当前文章则清空编辑器内容
+                instance?.proxy?.$bus.emit("resetArticle", node.id.replace("a-", ""))
             } else {
                 ElMessage.warning(data.message)
             }
@@ -260,7 +278,7 @@ function deleteNode(node: Category) {
     }
 }
 
-//新建分区
+//新建目录节点
 instance?.proxy?.$bus.on("newCategory", newCategory)
 function newCategory({ category, node }) {
     createCategory(category).then((data: Response<string>) => {
@@ -276,11 +294,97 @@ function newCategory({ category, node }) {
     })
 }
 
+//新建文章节点
+instance?.proxy?.$bus.on("newArticle", newArticle)
+function newArticle({ article, isRestore }) {
+    let node = null
+    //如果文章有分类id则添加到相应的目录下
+    if (article.categoryId && article.categoryId !== 0) {
+        //获取当前目录节点
+        node = getCategoryNode(article.categoryId, JSON.parse(JSON.stringify(state.value)))
+        //添加到当前节点的子节点
+        node.inverseParent.push({
+            id: `a-${article.id}`,
+            name: article.title,
+            userId: article.userId,
+            isArticle: true,
+            categoryId: article.categoryId === 0 ? null : article.categoryId,
+            status: article.status,
+        })
+        //更新目录树
+        categoryTree.value.updateKeyChildren(article.categoryId, JSON.parse(JSON.stringify(node.inverseParent)))
+    } else {
+        //添加到根目录
+        state.value?.push({
+            id: `a-${article.id}`,
+            name: article.title,
+            userId: article.userId,
+            isArticle: true,
+            categoryId: article.categoryId === 0 ? null : article.categoryId,
+            status: article.status,
+        })
+    }
+
+    if (isRestore === null || !isRestore) {
+        //展示新建的文章编辑区
+        router.replace({
+            query: {
+                articleId: article.id,
+                isEdit: 1,
+            },
+        })
+    }
+}
+
+//更新文章节点
+instance?.proxy?.$bus.on("updateArticleNode", updateArticleNode)
+function updateArticleNode(article: Article) {
+    let currentArticleNode = getCategoryNode(`a-${article.id}`, state.value)
+    //目录没有更改只修改文章名称和状态
+    if (currentArticleNode.categoryId === article.categoryId) {
+        currentArticleNode.name = article.title
+        currentArticleNode.status = article.status
+    } else {
+        //修改目录信息
+        //删除当前节点
+        categoryTree.value.remove(currentArticleNode)
+        //添加到新的节点上
+        if (article.categoryId) {
+            //获取新的目录节点
+            let parentNode = getCategoryNode(article.categoryId, state.value)
+            //添加数据到新的节点
+            parentNode.inverseParent.push({
+                id: `a-${article.id}`,
+                name: article.title,
+                userId: article.userId,
+                isArticle: true,
+                categoryId: article.categoryId === 0 ? null : article.categoryId,
+                status: article.status,
+            })
+            //更新目录树
+            categoryTree.value.updateKeyChildren(parentNode.id, JSON.parse(JSON.stringify(parentNode.inverseParent)))
+        }
+        //没有目录信息添加到根目录
+        else {
+            //添加到根目录
+            state.value?.push({
+                id: `a-${article.id}`,
+                name: article.title,
+                userId: article.userId,
+                isArticle: true,
+                categoryId: article.categoryId === 0 ? null : article.categoryId,
+                status: article.status,
+            })
+        }
+    }
+}
 getCategory()
 
 onUnmounted(() => {
     instance?.proxy?.$bus.all.delete("deleteNode")
     instance?.proxy?.$bus.all.delete("newCategory")
+    instance?.proxy?.$bus.all.delete("newArticle")
+    instance?.proxy?.$bus.all.delete("updateArticleNode")
 })
 </script>
 

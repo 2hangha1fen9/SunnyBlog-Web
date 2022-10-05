@@ -34,7 +34,7 @@ const getters = {
         if (getters.isValid(state)) {
             return state.jwt.token || JSON.parse(localStorage.getItem('jwt') || '{"token":"","expiration":0}').token || ""
         }
-        return ''
+        return JSON.parse(localStorage.getItem('jwt') || '{"token":"","expiration":0}').token || ""
     },
     userId(state: Jwt) {
         if (getters.isValid(state)) {

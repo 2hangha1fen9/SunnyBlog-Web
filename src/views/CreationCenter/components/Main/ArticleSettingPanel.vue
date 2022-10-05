@@ -72,7 +72,8 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from "vue"
+import { getCurrentInstance, reactive, ref } from "vue"
+import { useRouter } from "vue-router"
 import { useStore } from "vuex"
 import { ElMessage, UploadFile } from "element-plus"
 import type { FormRules, FormInstance } from "element-plus"
@@ -89,6 +90,7 @@ import { listRegion } from "@/api/article/region"
 import { listCategory } from "@/api/article/category"
 import { listPublicTag, listMyTag } from "@/api/article/tag"
 
+const router = useRouter()
 const store = useStore()
 const props = defineProps<{
     article: Article
@@ -117,6 +119,8 @@ const rules = reactive<FormRules>({
         },
     ],
 })
+const instance = getCurrentInstance()
+
 //上传预览图片
 function previewPhoto(file: UploadFile) {
     if (["image/jpeg", "image/png", "image/gif", "image/bmp", "image/ico"].indexOf(file.raw?.type) === -1) {
@@ -177,6 +181,8 @@ async function save(form: FormInstance) {
                             emits("closeDialog")
                             emits("updateState")
                         }, 1000)
+                        //更新目录节点
+                        instance?.proxy?.$bus.emit("updateArticleNode", article.value)
                     }
                     loading.value = false
                 })
@@ -185,9 +191,19 @@ async function save(form: FormInstance) {
                 publishArticle(article.value).then((data: Response<string>) => {
                     if (data.status === 200) {
                         ElMessage.success("发布成功")
+                        article.value.id = data.result //获取返回的id
                         setTimeout(() => {
                             emits("closeDialog")
                         }, 1000)
+                        //更新目录节点
+                        instance?.proxy?.$bus.emit("newArticle", { article: article.value })
+                        //编辑文章已保存
+                        router.replace({
+                            query: {
+                                articleId: data.result,
+                                isEdit: 1,
+                            },
+                        })
                     } else {
                         ElMessage.warning(data.message)
                     }
@@ -200,6 +216,7 @@ async function save(form: FormInstance) {
         }
     })
 }
+
 //获取所有目录
 function getCategory() {
     listCategory().then((data: Response<Array<Region>>) => {
@@ -210,7 +227,6 @@ function getCategory() {
         }
     })
 }
-
 //获取所有分区
 function getRegions() {
     listRegion().then((data: Response<Array<Region>>) => {
@@ -250,6 +266,8 @@ getCategory()
 getRegions()
 getPublicTag()
 if (props.isEdit) {
+    article.value.categoryId = article.value.categoryId === 0 ? null : article.value.categoryId
+    article.value.regionId = article.value.regionId === 0 ? null : article.value.regionId
     //如果为编辑模式获取这篇文章作者的所有标签
     getUserTag(article.value.userId)
 } else {

@@ -4,22 +4,35 @@
         <nav class="nav">
             <div class="nav-item title-item">
                 <input type="text" class="title-input" placeholder="请输入文章标题" v-model="article.title" />
-                <el-button type="success" class="title-submit" :loading="btnLoading" @click="saveArticle">保存</el-button>
+                <el-button round type="success" class="title-submit" :loading="setBtnLoading" @click="saveArticle">保存</el-button>
             </div>
             <el-divider direction="vertical" />
             <div class="nav-item">
-                <el-button round>内容管理</el-button>
-            </div>
-            <div class="nav-item">
                 <!-- 头像 -->
-                <Avatar :photo="photo" :username="username" :showUsername="false"></Avatar>
+                <el-popover>
+                    <template #reference>
+                        <Avatar :photo="photo" :username="username" :showUsername="false"></Avatar>
+                    </template>
+                    <template #default>
+                        <el-menu class="dropdown-menu" active-text-color="#303133">
+                            <el-menu-item index="0" @click="router.push('/')">首页</el-menu-item>
+                            <el-menu-item index="2">内容管理</el-menu-item>
+                            <el-menu-item index="2" @click="restoreDialogVisible = true">文章回收站</el-menu-item>
+                        </el-menu>
+                    </template>
+                </el-popover>
             </div>
         </nav>
         <div class="main">
             <!-- markdown编辑器 -->
             <div id="vditor"></div>
-            <el-dialog @close="btnLoading = false" v-model="dialogVisible" v-if="dialogVisible" title="发布文章">
-                <ArticleSettingPanel :article="article" :isEdit="false" @closeDialog="dialogVisible = false"></ArticleSettingPanel>
+            <!-- 文章保存对话框 -->
+            <el-dialog align-center @close="setBtnLoading = false" v-model="setDialogVisible" v-if="setDialogVisible" title="发布文章">
+                <ArticleSettingPanel :article="article" :isEdit="isEdit" @closeDialog="setDialogVisible = setBtnLoading = false"></ArticleSettingPanel>
+            </el-dialog>
+            <!-- 回收站 -->
+            <el-dialog align-center @close="restoreDialogVisible = false" v-model="restoreDialogVisible" v-if="restoreDialogVisible" title="回收站">
+                <ArticleRecycleBin />
             </el-dialog>
         </div>
     </el-container>
@@ -28,11 +41,12 @@
 <script setup lang="ts">
 import Vditor from "vditor"
 import "vditor/dist/index.css"
-import { ref, onMounted, computed } from "vue"
+import { ref, onMounted, computed, watch, nextTick, getCurrentInstance, onUnmounted } from "vue"
 import { useStore } from "vuex"
 import { useRoute, useRouter } from "vue-router"
 import { ElMessage } from "element-plus"
 import ArticleSettingPanel from "./ArticleSettingPanel.vue"
+import ArticleRecycleBin from "./ArticleRecycleBin.vue"
 import Avatar from "@/components/Avatar.vue"
 //接口
 import { Article } from "@/interface/article/article"
@@ -49,19 +63,23 @@ const store = useStore() //使用vuex
 const username = computed(() => store.getters["identity/username"])
 const photo = computed(() => store.getters["identity/photo"])
 
-//从路由中获取文章id
-const articleId: number = parseInt(route.query["articleId"])
-const isEdit = Boolean(route.query["isEdit"])
-const btnLoading = ref(false)
-const dialogVisible = ref(false) //对话框显示状态
+//文章设置对话框状态
+const articleId = ref(parseInt(route.query["articleId"]))
+const isEdit = ref(Boolean(route.query["isEdit"]))
+const setBtnLoading = ref(false)
+const setDialogVisible = ref(false) //对话框显示状态
 const article = ref<Article>({})
+//回收站对话框状态
+const restoreDialogVisible = ref(false)
+//markdown编辑器
+const vditor = ref<Vditor | null>(null)
 
 //初始化文章数据
 function initArticle() {
-    getArticle(articleId).then((data: Response<Article>) => {
+    getArticle(articleId.value).then((data: Response<Article>) => {
         article.value = data.result
         vditor.value?.setTheme("classic", data.result.contentStyle, data.result.codeStyle)
-        vditor.value?.setValue(data.result.content)
+        vditor.value?.setValue(data.result.content || "")
 
         //将分类数据,标签数据转换为ID数组
         let tagIds = []
@@ -69,42 +87,11 @@ function initArticle() {
             tagIds.unshift(item.id)
         })
         article.value.tags = tagIds
-        let categoryIds = []
-        article.value.categorys.forEach((item) => {
-            tagIds.unshift(item.id)
-        })
-        article.value.categorys = categoryIds
     })
 }
-
-function saveArticle() {
-    btnLoading.value = true
-    article.value.content = vditor.value?.getValue()
-    article.value.contentStyle = vditor.value?.vditor.options.preview?.theme?.current
-    article.value.codeStyle = vditor.value?.vditor.options.preview?.hljs?.style
-
-    if (isEdit) {
-        //编辑模式
-        updateArticle(article.value).then((data: Response<string>) => {
-            if (data.status === 200) {
-                ElMessage.success("保存成功")
-                router.back()
-            } else {
-                ElMessage.error(data.message)
-            }
-            btnLoading.value = false
-        })
-    } else {
-        dialogVisible.value = true
-    }
-}
-
-//markdown编辑器
-const vditor = ref<Vditor | null>(null)
-onMounted(() => {
-    if (isEdit) {
-        initArticle()
-    }
+//初始化编辑器
+function initEditor() {
+    vditor.value?.destroy()
     //markdown编辑器配置
     vditor.value = new Vditor("vditor", {
         height: "91vh",
@@ -128,7 +115,6 @@ onMounted(() => {
             enable: true,
             type: "text",
         },
-        
         toolbar: ["emoji", "headings", "bold", "italic", "strike", "line", "|", "outdent", "indent", "|", "quote", "list", "ordered-list", "check", "table", "|", "code", "inline-code", "|", "insert-after", "insert-before", "|", "undo", "redo", "|", "upload", "link", "|", "code-theme", "content-theme", "export", "|", "edit-mode", "preview", "outline", "fullscreen"],
         upload: {
             //自定义上传逻辑
@@ -147,7 +133,110 @@ onMounted(() => {
                 })
             },
         },
+        after() {
+            nextTick(() => {
+                isEdit.value && initArticle()
+            })
+        },
     })
+}
+
+//保存文章
+function saveArticle() {
+    setBtnLoading.value = true
+    article.value.content = vditor.value?.getValue()
+    article.value.contentStyle = vditor.value?.vditor.options.preview?.theme?.current
+    article.value.codeStyle = vditor.value?.vditor.options.preview?.hljs?.style
+    setDialogVisible.value = true
+}
+//静默保存文章
+function staticSaveArticle(auto = false) {
+    if (isEdit.value) {
+        setBtnLoading.value = true
+        article.value.content = vditor.value?.getValue()
+        article.value.contentStyle = vditor.value?.vditor.options.preview?.theme?.current
+        article.value.codeStyle = vditor.value?.vditor.options.preview?.hljs?.style
+        updateArticle(article.value)
+            .then((data: Response<string>) => {
+                if (data.status === 200) {
+                    ElMessage.success("保存成功")
+                    //更新目录节点
+                    instance?.proxy?.$bus.emit("updateArticleNode", article.value)
+                } else {
+                    ElMessage.warning(data.message)
+                }
+            })
+            .finally(() => {
+                setBtnLoading.value = false
+            })
+    } else {
+        !auto && saveArticle()
+    }
+}
+
+//拖拽文章同步修改目录
+const instance = getCurrentInstance()
+instance?.proxy?.$bus.on("updateCategory", updateCategory)
+function updateCategory(cid: number) {
+    if (isEdit.value) {
+        article.value.categoryId = cid
+    }
+}
+//目录上修改名称同步修改模型
+instance?.proxy?.$bus.on("updateArticleName", updateArticleName)
+function updateArticleName({ aid, name }) {
+    if (aid == article.value.id) {
+        article.value.title = name
+    }
+}
+//重置文章数据模型
+instance?.proxy?.$bus.on("resetArticle", resetArticle)
+function resetArticle(aid: number) {
+    if (aid == article.value.id) {
+        article.value = {}
+        article.value.status = 4
+        article.value.commentStatus = 1
+        article.value.isLock = 1
+        isEdit.value = null
+        router.replace({
+            query: null,
+        })
+        initEditor()
+    }
+}
+
+//自动保存定时器 间隔5分钟
+let autoSaveTimer = null
+onMounted(() => {
+    initEditor()
+    //监视路由query参数
+    watch(route, (newVal) => {
+        if (newVal.query["articleId"]) {
+            articleId.value = parseInt(route.query["articleId"])
+            if (newVal.query["isEdit"]) {
+                isEdit.value = Boolean(route.query["isEdit"])
+            }
+            initEditor()
+        }
+    })
+    //ctrl+s保存
+    addEventListener("keydown", function (e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+            e.preventDefault()
+            staticSaveArticle()
+        }
+    })
+    //自动保存定时器
+    autoSaveTimer = setInterval(() => {
+        staticSaveArticle(true)
+    }, 1000 * 60 * 5)
+})
+
+onUnmounted(() => {
+    instance?.proxy?.$bus.all.delete("updateCategory")
+    instance?.proxy?.$bus.all.delete("resetArticle")
+    instance?.proxy?.$bus.all.delete("updateArticleName")
+    clearInterval(autoSaveTimer)
 })
 </script>
 
@@ -175,6 +264,7 @@ onMounted(() => {
     height: var(--el-menu-item-height);
     display: flex;
     align-items: center;
+    margin: 5px;
 }
 .title-item {
     width: 100%;
@@ -199,5 +289,9 @@ onMounted(() => {
 }
 .vditor-toolbar {
     background-color: #fff !important;
+}
+
+.dropdown-menu {
+    border: none;
 }
 </style>

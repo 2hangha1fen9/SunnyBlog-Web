@@ -1,6 +1,6 @@
 <template>
     <nav class="side-container" @contextmenu="showContextMenu">
-        <el-scrollbar max-height="100%">
+        <el-scrollbar max-height="100%" style="width: 250px">
             <CategoryTree @getContextNode="setContextNode" @newCategorySuccess="newCategorySuccess" />
         </el-scrollbar>
         <!-- 添加目录对话框 -->
@@ -29,7 +29,7 @@
             </el-form>
         </el-dialog>
         <!-- 添加文章对话框 -->
-        <el-dialog v-model="ArtDialogVisible" v-if="ArtDialogVisible" title="发布文章">
+        <el-dialog align-center v-model="ArtDialogVisible" v-if="ArtDialogVisible" title="发布文章">
             <ArticleSettingPanel :article="articleState" :isEdit="false" @closeDialog="ArtDialogVisible = false"></ArticleSettingPanel>
         </el-dialog>
     </nav>
@@ -117,9 +117,7 @@ const delOption = {
     label: "删除",
     click: () => {
         if (currentNode.value) {
-            ElMessageBox.confirm(`是否要将 "${currentNode.value?.name}" 删除(文章会移入回收站)`).then(() => {
-                instance?.proxy?.$bus.emit("deleteNode", currentNode.value)
-            })
+            instance?.proxy?.$bus.emit("deleteNode", currentNode.value)
         }
     },
     disabled: false,
@@ -160,7 +158,7 @@ function setContextNode(node: Category) {
     currentNode.value = node
 }
 
-//新建目录
+//新建目录前置验证
 async function newCategory(form: FormInstance) {
     if (!form) return
     await form.validate((valid, fields) => {
