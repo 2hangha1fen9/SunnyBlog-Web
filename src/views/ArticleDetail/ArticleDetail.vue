@@ -170,10 +170,9 @@ function getUserInfo(uid: number) {
 .user-avatar {
     text-align: center;
 }
-
-.user-avatar span {
-    width: 70px;
+.user-avatar .el-avatar {
     height: 70px;
+    width: 70px;
 }
 
 .user-avatar p {

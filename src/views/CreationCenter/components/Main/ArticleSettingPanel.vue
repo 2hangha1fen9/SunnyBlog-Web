@@ -18,6 +18,12 @@
         <el-form-item label="摘要" prop="summary">
             <el-input v-model="article.summary" type="textarea" />
         </el-form-item>
+        <el-form-item label="标签" prop="tags" class="select">
+            <el-select v-model="article.tags" multiple class="tag-select">
+                <el-option v-for="tag in tags" :key="tag.id" :value="tag.id" :label="tag.name" :style="`color:${tag.color}`"/>
+            </el-select>
+            <el-button class="add-tag-btn" @click="tagDialogVisible = true">标签管理</el-button>
+        </el-form-item>
         <el-form-item label="目录" prop="categoryId">
             <el-tree-select
                 v-model="article.categoryId"
@@ -46,11 +52,6 @@
                 :render-after-expand="false"
             />
         </el-form-item>
-        <el-form-item label="标签" prop="tags" class="select">
-            <el-select v-model="article.tags" multiple class="select">
-                <el-option v-for="tag in tags" :key="tag.id" :value="tag.id" :label="tag.name" />
-            </el-select>
-        </el-form-item>
         <el-form-item required label="状态" prop="status">
             <el-radio-group v-model="article.status">
                 <el-radio-button :label="4">草稿</el-radio-button>
@@ -69,14 +70,18 @@
             <el-button type="primary" :loading="loading" @click="saveArticle(formRef)">提交</el-button>
         </div>
     </el-form>
+    <!-- 标签管理对话框 -->
+    <el-dialog width="70%" align-center v-model="tagDialogVisible" v-if="tagDialogVisible" title="标签管理">
+        <TagManager @updateTag="updateTag" />
+    </el-dialog>
 </template>
 
 <script setup lang="ts">
 import { getCurrentInstance, reactive, ref } from "vue"
 import { useRouter } from "vue-router"
-import { useStore } from "vuex"
 import { ElMessage, UploadFile } from "element-plus"
 import type { FormRules, FormInstance } from "element-plus"
+import TagManager from "./TagManager.vue"
 // 接口
 import { Article } from "@/interface/article/article"
 import { Region } from "@/interface/article/region"
@@ -88,10 +93,9 @@ import { updateArticle, publishArticle } from "@/api/article/article"
 import { uploadPicture } from "@/api/article/drawing-bed"
 import { listRegion } from "@/api/article/region"
 import { listCategory } from "@/api/article/category"
-import { listPublicTag, listMyTag } from "@/api/article/tag"
+import { listMyTag } from "@/api/article/tag"
 
 const router = useRouter()
-const store = useStore()
 const props = defineProps<{
     article: Article
     isEdit: boolean
@@ -100,6 +104,9 @@ const emits = defineEmits<{
     (event: "closeDialog"): void
     (event: "updateState"): void
 }>()
+
+//添加标签对话框
+const tagDialogVisible = ref(false)
 
 //表单数据
 const article = ref<Article>(props.article ?? {})
@@ -238,8 +245,8 @@ function getRegions() {
     })
 }
 //获取所有公共标签
-function getPublicTag() {
-    listPublicTag().then((data: Response<Array<Tag>>) => {
+function getTag() {
+    listMyTag().then((data: Response<Array<Tag>>) => {
         if (data.status === 200) {
             data.result.forEach((item) => {
                 if (tags.value.findIndex((i) => i.id == item.id) == -1) {
@@ -249,41 +256,40 @@ function getPublicTag() {
         }
     })
 }
-//获取用户的标签
-function getUserTag() {
-    listMyTag(article.value.userId).then((data: Response<Array<Tag>>) => {
-        if (data.status === 200) {
-            data.result.forEach((item) => {
-                if (tags.value.findIndex((i) => i.id == item.id) == -1) {
-                    tags.value.unshift(item)
-                }
-            })
-        }
-    })
+//更新标签数据
+function updateTag(ts: Array<Tag>) {
+    tags.value = ts
 }
 
 getCategory()
 getRegions()
-getPublicTag()
+getTag()
 if (props.isEdit) {
     article.value.categoryId = article.value.categoryId === 0 ? null : article.value.categoryId
     article.value.regionId = article.value.regionId === 0 ? null : article.value.regionId
-    //如果为编辑模式获取这篇文章作者的所有标签
-    getUserTag(article.value.userId)
 } else {
     article.value.status = 4
     article.value.commentStatus = 1
     article.value.isLock = 1
-    getUserTag(store.getters["identity/userId"]) //如果是网站管理员获取这个管理的所有ID
 }
 </script>
 
-<style scoped>
+<style>
 .submit {
     display: flex;
     justify-content: flex-end;
 }
 .select {
-    min-width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+.tag-select {
+    width: 100%;
+}
+.el-form-item__content {
+    flex-wrap: nowrap;
+}
+.add-tag-btn {
+    margin: 5px;
 }
 </style>

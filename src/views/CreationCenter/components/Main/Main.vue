@@ -1,7 +1,9 @@
 <template>
-    <el-container direction="vertical" class="main-container">
+    <el-container direction="vertical" class="editor-container">
         <!-- 头部 -->
         <nav class="nav">
+            <!-- 侧边栏按钮 -->
+            <Hamburger :is-active="sidebar.opened" @toggleClick="toggleSideBar" />
             <div class="nav-item title-item">
                 <input type="text" class="title-input" placeholder="请输入文章标题" v-model="article.title" />
                 <el-button round type="success" class="title-submit" :loading="setBtnLoading" @click="saveArticle">保存</el-button>
@@ -17,7 +19,8 @@
                         <el-menu class="dropdown-menu" active-text-color="#303133">
                             <el-menu-item index="0" @click="router.push('/')">首页</el-menu-item>
                             <el-menu-item index="2">内容管理</el-menu-item>
-                            <el-menu-item index="2" @click="restoreDialogVisible = true">文章回收站</el-menu-item>
+                            <el-menu-item index="2" @click="tagDialogVisible = true">标签管理</el-menu-item>
+                            <el-menu-item index="2" @click="restoreDialogVisible = true">回收站</el-menu-item>
                         </el-menu>
                     </template>
                 </el-popover>
@@ -34,6 +37,10 @@
             <el-dialog align-center @close="restoreDialogVisible = false" v-model="restoreDialogVisible" v-if="restoreDialogVisible" title="回收站">
                 <ArticleRecycleBin />
             </el-dialog>
+            <!-- 标签管理对话框 -->
+            <el-dialog width="70%" align-center v-model="tagDialogVisible" v-if="tagDialogVisible" title="标签管理">
+                <TagManager />
+            </el-dialog>
         </div>
     </el-container>
 </template>
@@ -47,18 +54,23 @@ import { useRoute, useRouter } from "vue-router"
 import { ElMessage } from "element-plus"
 import ArticleSettingPanel from "./ArticleSettingPanel.vue"
 import ArticleRecycleBin from "./ArticleRecycleBin.vue"
+import Hamburger from "../SideBar/Hamburger.vue"
 import Avatar from "@/components/Avatar.vue"
+import TagManager from "./TagManager.vue"
 //接口
 import { Article } from "@/interface/article/article"
 import { Response } from "@/interface/common/response"
 // api
 import { uploadPicture } from "@/api/article/drawing-bed"
 import { updateArticle, getArticle } from "@/api/article/article"
+import { sum } from "lodash-es"
 
 const router = useRouter()
 const route = useRoute()
 const store = useStore() //使用vuex
 
+//汉堡按钮状态
+const sidebar = computed(() => store.getters["sidebar/sidebar"])
 // 头像数据
 const username = computed(() => store.getters["identity/username"])
 const photo = computed(() => store.getters["identity/photo"])
@@ -71,8 +83,15 @@ const setDialogVisible = ref(false) //对话框显示状态
 const article = ref<Article>({})
 //回收站对话框状态
 const restoreDialogVisible = ref(false)
+//添加标签对话框
+const tagDialogVisible = ref(false)
 //markdown编辑器
 const vditor = ref<Vditor | null>(null)
+
+//侧边栏切换
+function toggleSideBar() {
+    store.dispatch("sidebar/toggleSideBar")
+}
 
 //初始化文章数据
 function initArticle() {
@@ -141,12 +160,26 @@ function initEditor() {
     })
 }
 
+//获取文章摘要
+function getSummary() {
+    let temp = document.createElement("div")
+    temp.innerHTML = vditor.value?.getHTML()
+    let summary = ""
+    for (let e of temp.children) {
+        if (e.tagName === "P") {
+            summary += e.innerText
+        }
+    }
+    article.value.summary = summary.substring(0,200)
+}
+
 //保存文章
 function saveArticle() {
     setBtnLoading.value = true
     article.value.content = vditor.value?.getValue()
     article.value.contentStyle = vditor.value?.vditor.options.preview?.theme?.current
     article.value.codeStyle = vditor.value?.vditor.options.preview?.hljs?.style
+    getSummary()
     setDialogVisible.value = true
 }
 //静默保存文章
@@ -156,6 +189,7 @@ function staticSaveArticle(auto = false) {
         article.value.content = vditor.value?.getValue()
         article.value.contentStyle = vditor.value?.vditor.options.preview?.theme?.current
         article.value.codeStyle = vditor.value?.vditor.options.preview?.hljs?.style
+        getSummary()
         updateArticle(article.value)
             .then((data: Response<string>) => {
                 if (data.status === 200) {
@@ -258,7 +292,7 @@ onUnmounted(() => {
     font-size: 24px;
     font-weight: 500;
     color: #1d2129;
-    padding-left: 40px;
+    padding-left: 10px;
 }
 .nav-item {
     height: var(--el-menu-item-height);
@@ -274,7 +308,7 @@ onUnmounted(() => {
 }
 
 /* 内容编辑栏 */
-.main-container {
+.editor-container {
     position: relative;
     min-height: 100%;
     background-color: rgb(246, 248, 249);

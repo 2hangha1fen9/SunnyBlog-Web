@@ -1,6 +1,6 @@
 <template>
-    <nav class="side-container" @contextmenu="showContextMenu">
-        <el-scrollbar max-height="100%" style="width: 250px">
+    <nav :class="{ 'side-container': true, 'side-collapse': sidebar.opened }" @contextmenu="showContextMenu">
+        <el-scrollbar max-height="100%" style="width: inherit">
             <CategoryTree @getContextNode="setContextNode" @newCategorySuccess="newCategorySuccess" />
         </el-scrollbar>
         <!-- 添加目录对话框 -->
@@ -36,6 +36,8 @@
 </template>
 
 <script setup lang="ts">
+import { useStore } from "vuex"
+import { computed } from "vue"
 import { getCurrentInstance, ref, reactive } from "vue"
 import CategoryTree from "./CategoryTree.vue"
 import ArticleSettingPanel from "../Main/ArticleSettingPanel.vue"
@@ -47,6 +49,10 @@ import { Category } from "@/interface/article/category"
 import { ElMessageBox } from "element-plus"
 import { listCategory } from "@/api/article/category"
 import { Article } from "@/interface/article/article"
+
+//侧边栏状态
+const store = useStore()
+const sidebar = computed(() => store.getters["sidebar/sidebar"])
 
 const instance = getCurrentInstance()
 const currentNode = ref<Category>()
@@ -190,9 +196,15 @@ function newCategorySuccess() {
     background-color: #fff;
     -webkit-box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
     box-shadow: 0 1px 14px rgb(0 21 41 / 8%);
+    transition: all 0.5s;
 }
 .submit {
     display: flex;
     justify-content: flex-end;
+}
+
+.side-collapse {
+    width: 0px;
+    transform: translateX(-250px);
 }
 </style>

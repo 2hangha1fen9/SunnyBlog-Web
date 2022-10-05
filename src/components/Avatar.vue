@@ -1,6 +1,6 @@
 <template>
     <div class="avatar">
-        <el-avatar :src="photo" size="default" class="d" />
+        <el-avatar :src="photo" size="default" />
         <span class="d" v-if="showUsername">{{ username }}</span>
     </div>
 </template>
@@ -26,6 +26,7 @@ defineProps({
 .avatar {
     display: flex;
     align-items: center;
+    flex-direction: column;
 }
 .d {
     margin: 5px;
