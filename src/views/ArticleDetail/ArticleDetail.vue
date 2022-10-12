@@ -144,6 +144,10 @@ function getUserInfo(uid: number) {
 /* 标题 */
 .cover-title {
     font-size: 2em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
 }
 /* 文章元数据 */
 .cover-meta span {

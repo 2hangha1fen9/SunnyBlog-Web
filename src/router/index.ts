@@ -20,6 +20,18 @@ const routes: Array<RouteRecordRaw> = [
         ]
     },
     {
+        path: '/notification',
+        name: 'notification',
+        redirect: '/notification',
+        component: Layout,
+        children: [
+            {
+                path: '/notification',
+                component: () => import('@/views/Notification/Notification.vue')
+            }
+        ]
+    },
+    {
         path: '/article',
         name: 'article',
         redirect: '/index',
@@ -40,6 +52,7 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/identity',
         component: Identity,
+        name: 'identity',
         redirect: '/identity/login',
         children: [
             {
@@ -54,6 +67,7 @@ const routes: Array<RouteRecordRaw> = [
     },
     {
         path: "/404",
+        name: '404',
         component: () => import("@/views/404.vue"),
         meta: {
             title: '404',

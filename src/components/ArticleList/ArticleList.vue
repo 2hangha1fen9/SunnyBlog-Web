@@ -87,7 +87,7 @@ function jumpArticle(aid: number) {
 
 /* 行间距 */
 .article-meta,
-.article.title,
+.article-title,
 .article-summay,
 .article-count {
     margin: 10px 0px 10px 0px;
@@ -95,6 +95,13 @@ function jumpArticle(aid: number) {
 
 .article-meta > span {
     color: #86909c !important;
+}
+
+.article-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
 }
 
 /* 文章摘要 */

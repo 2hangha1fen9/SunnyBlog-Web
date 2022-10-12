@@ -30,7 +30,7 @@
             <fieldset class="tag-fieldset" v-if="myTags.length">
                 <legend>我的标签</legend>
                 <el-tooltip v-for="tag in myTags" :key="tag.name" effect="dark" :content="` ${tag.articleCount || 0} 篇文章`" placement="top-start">
-                    <el-tag class="tag" :color="tag.color" closable effect="dark" @click="preEditTag(tag)" @close="deleteSingleTag(tag.id)">
+                    <el-tag class="tag-item" :color="tag.color" closable effect="dark" @click="preEditTag(tag)" @close="deleteSingleTag(tag.id)">
                         {{ tag.name }}
                     </el-tag>
                 </el-tooltip>
@@ -38,7 +38,7 @@
             <fieldset class="tag-fieldset" v-if="publicTags.length">
                 <legend>公共标签</legend>
                 <el-tooltip v-for="tag in publicTags" :key="tag.name" effect="dark" :content="` ${tag.articleCount || 0} 篇文章`" placement="top-start">
-                    <el-tag class="tag" :color="tag.color" effect="dark">
+                    <el-tag class="tag-item" :color="tag.color" effect="dark">
                         {{ tag.name }}
                     </el-tag>
                 </el-tooltip>
@@ -209,7 +209,7 @@ getAllTag()
 .color-pick {
     width: 100px;
 }
-.tag {
+.tag-item {
     cursor: pointer;
     margin: 5px;
     border: none;

@@ -1,5 +1,6 @@
 <template>
-    <div class="cate-tree-container">
+    <el-scrollbar max-height="100%" style="width: inherit">
+        <el-input v-model="filterText" placeholder="过滤关键字" clearable class="filter-input" />
         <el-tree
             :data="state"
             node-key="id"
@@ -12,6 +13,7 @@
             :render-after-expand="false"
             :allow-drop="dropCheck"
             :expand-on-click-node="false"
+            :filter-node-method="filterNode"
             @node-drag-end="dragEnd"
             @node-click="expandArticle"
             ref="categoryTree"
@@ -24,13 +26,13 @@
                 </p>
             </template>
         </el-tree>
-    </div>
+    </el-scrollbar>
 </template>
 
 <script setup lang="ts">
-import { getCurrentInstance, onUnmounted, ref } from "vue"
+import { getCurrentInstance, onUnmounted, ref, watch } from "vue"
 import { useRouter } from "vue-router"
-import { ElMessage } from "element-plus"
+import { ElMessage, ElTree } from "element-plus"
 import { listCategory, updateCategory, createCategory, deleteCategory } from "@/api/article/category"
 import { deleteArticle, updateArticle, listMyArticle } from "@/api/article/article"
 import { Category } from "@/interface/article/category"
@@ -40,6 +42,7 @@ import type Node from "element-plus/es/components/tree/src/model/node"
 import type { DropType } from "element-plus/es/components/tree/src/tree.type"
 import SvgIcon from "@/components/SvgIcon.vue"
 import { debounce } from "lodash-es"
+import { Tree } from "element-plus/es/components/tree-v2/src/types"
 
 const router = useRouter()
 const instance = getCurrentInstance()
@@ -49,6 +52,17 @@ const emits = defineEmits<{
     (event: "getContextNode", node: Category): Node
     (event: "newCategorySuccess"): void
 }>()
+
+//搜索关键字
+const filterText = ref("")
+function filterNode(value: string, data: Tree) {
+    if (!value) return true
+    return data.name.includes(value)
+}
+//监听关键字变化
+watch(filterText, (val) => {
+    categoryTree.value!.filter(val)
+})
 
 //获取分类信息
 function getCategory() {
@@ -246,8 +260,13 @@ function renameNode(node: Category) {
 
 //删除节点
 instance?.proxy?.$bus.on("deleteNode", deleteNode)
-function deleteNode(node: Category) {
-    if (!node.isArticle) {
+function deleteNode({ node, id }) {
+    //如果传入为id先查询出node
+    if (id) {
+        node = getCategoryNode(`a-${id}`, state.value)
+        //有id仅做前端删除
+        node && categoryTree.value.remove(node)
+    } else if (!node?.isArticle) {
         if (node.inverseParent.length <= 0) {
             deleteCategory(node.id).then((data: Response<string>) => {
                 if (data.status === 200) {
@@ -260,14 +279,15 @@ function deleteNode(node: Category) {
         } else {
             ElMessage.warning("该目录下还有子元素")
         }
-    } else if (node.isArticle) {
+    } else if (node?.isArticle) {
+        //没有id则调用api删除
         deleteArticle([
             {
                 id: node.id.replace("a-", ""),
             },
         ]).then((data: Response<string>) => {
             if (data.status === 200) {
-                ElMessage.success(data.message)
+                ElMessage.success("删除成功,需要恢复请查看回收站")
                 categoryTree.value.remove(node)
                 //如果当前编辑器是当前文章则清空编辑器内容
                 instance?.proxy?.$bus.emit("resetArticle", node.id.replace("a-", ""))
@@ -284,7 +304,7 @@ function newCategory({ category, node }) {
     createCategory(category).then((data: Response<string>) => {
         if (data.status === 200) {
             //添加到相应节点
-            category.id = data.result
+            category.id = parseInt(data.result)
             category.inverseParent = []
             categoryTree.value.append(JSON.parse(JSON.stringify(category)), node)
         } else {
@@ -341,7 +361,7 @@ instance?.proxy?.$bus.on("updateArticleNode", updateArticleNode)
 function updateArticleNode(article: Article) {
     let currentArticleNode = getCategoryNode(`a-${article.id}`, state.value)
     //目录没有更改只修改文章名称和状态
-    if (currentArticleNode.categoryId === article.categoryId) {
+    if (currentArticleNode?.categoryId === article?.categoryId) {
         currentArticleNode.name = article.title
         currentArticleNode.status = article.status
     } else {
@@ -349,7 +369,7 @@ function updateArticleNode(article: Article) {
         //删除当前节点
         categoryTree.value.remove(currentArticleNode)
         //添加到新的节点上
-        if (article.categoryId) {
+        if (article?.categoryId) {
             //获取新的目录节点
             let parentNode = getCategoryNode(article.categoryId, state.value)
             //添加数据到新的节点
@@ -389,8 +409,9 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.cate-tree-container {
-    height: 100%;
+.el-tree {
+    display: inline-block;
+    min-width: 100%;
 }
 .el-tree >>> .el-tree-node__content {
     height: 40px;
@@ -401,5 +422,9 @@ onUnmounted(() => {
 }
 .editorInput {
     outline-color: #40a0ffb3;
+}
+.filter-input >>> .el-input__wrapper {
+    width: 100%;
+    margin: 5px;
 }
 </style>

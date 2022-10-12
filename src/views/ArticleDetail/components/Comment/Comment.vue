@@ -28,7 +28,7 @@ const props = defineProps<{
 }>()
 
 function listComment(isFirst = false) {
-    getArticleComment(props.aid, isFirst ? 1 : state?.pageIndex, state?.pageSize, null).then((data: Response<PageBean<Array<Comment>>>) => {
+    getArticleComment(props.aid, isFirst ? 1 : state?.pageIndex, state?.pageSize || 10, null).then((data: Response<PageBean<Array<Comment>>>) => {
         if (data.status !== 200) {
             ElMessage.warning("数据拉取失败")
         }

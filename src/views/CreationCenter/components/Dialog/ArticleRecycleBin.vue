@@ -1,10 +1,10 @@
 <template>
     <el-table :data="state.page" border ref="tableRef" v-loading="tableLoading">
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="title" fixed="" label="文章标题" min-width="300" />
+        <el-table-column prop="title" fixed="left" label="文章标题" d/>
         <el-table-column prop="regionName" label="分区" min-width="100" />
         <el-table-column prop="categoryName" label="目录" min-width="100" />
-        <el-table-column width="130" label="操作">
+        <el-table-column width="130" label="操作" fixed="right">
             <template #default="scope">
                 <el-button-group>
                     <el-button type="success" size="small" @click="handleSingleRestore(scope.row, scope.$index)">还原</el-button>
@@ -73,9 +73,9 @@ function handleSingleDelete(id: number, rowIndex: number) {
     deleteArticle([{ id: id }]).then((data: Response<string>) => {
         if (data.status === 200) {
             ElMessage.success(data.message)
-            //如果当前编辑器是当前文章则清空编辑器内容
-            instance?.proxy?.$bus.emit("resetArticle",id)
             state.page.splice(rowIndex, 1)
+            //如果当前编辑器是当前文章则清空编辑器内容
+            instance?.proxy?.$bus.emit("resetArticle", id)
         } else {
             ElMessage.error(data.message)
         }
@@ -94,7 +94,10 @@ function handleManyDelete() {
     deleteArticle(ids).then((data: Response<string>) => {
         if (data.status === 200) {
             ElMessage.success(data.message)
-            getArticleList()
+            state.page = state.page.filter((item: Article) => {
+                //过滤已删除的id
+                return ids.find((i: ArticleId) => i.id === item.id) == null
+            })
         } else {
             ElMessage.error(data.message)
         }

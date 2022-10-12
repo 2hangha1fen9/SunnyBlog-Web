@@ -2,7 +2,7 @@
     <el-form :rules="rules" ref="formRef" :model="article" label-width="80px">
         <el-form-item label="封面" prop="photo">
             <el-upload class="avatar-uploader" :show-file-list="false" :auto-upload="false" :limit="1" :on-change="previewPhoto" name="data">
-                <el-image style="min-width: 200px; height: 150px; max-width: 100%; max-height: 100%; display: block" fit="scale-down" ref="photoRef" :src="article.photo">
+                <el-image style="min-width: 200px; height: 150px; max-width: 100%; max-height: 100%; display: block" fit="scale-down" ref="photoRef" :src="photoUrl">
                     <template #placeholder>
                         <el-skeleton-item variant="image" style="width: 100%; height: 100%" />
                     </template>
@@ -19,8 +19,8 @@
             <el-input v-model="article.summary" type="textarea" />
         </el-form-item>
         <el-form-item label="标签" prop="tags" class="select">
-            <el-select v-model="article.tags" multiple class="tag-select">
-                <el-option v-for="tag in tags" :key="tag.id" :value="tag.id" :label="tag.name" :style="`color:${tag.color}`"/>
+            <el-select v-model="article.tags" multiple class="tag-select" filterable>
+                <el-option v-for="tag in tags" :key="tag.id" :value="tag.id" :label="tag.name" :style="`color:${tag.color}`" />
             </el-select>
             <el-button class="add-tag-btn" @click="tagDialogVisible = true">标签管理</el-button>
         </el-form-item>
@@ -34,6 +34,7 @@
                     children: 'inverseParent',
                 }"
                 clearable
+                filterable
                 check-strictly
                 :render-after-expand="false"
             />
@@ -48,6 +49,7 @@
                     children: 'inverseParent',
                 }"
                 clearable
+                filterable
                 check-strictly
                 :render-after-expand="false"
             />
@@ -77,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { getCurrentInstance, reactive, ref } from "vue"
+import { computed, getCurrentInstance, reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 import { ElMessage, UploadFile } from "element-plus"
 import type { FormRules, FormInstance } from "element-plus"
@@ -102,7 +104,8 @@ const props = defineProps<{
 }>()
 const emits = defineEmits<{
     (event: "closeDialog"): void
-    (event: "updateState"): void
+    (event: "updateState", article: Article): void
+    (event: "resetState"): void
 }>()
 
 //添加标签对话框
@@ -116,6 +119,13 @@ const tags = ref<Array<Tag>>([]) //所有标签
 const loading = ref(false)
 const formRef = ref<FormInstance>()
 const photoData = ref<FormData>(new FormData()) //待上传的图片数据
+const photoUrl = computed(() => {
+    if (photoData.value.get("data")) {
+        return article.value.photo
+    } else {
+        return `${process.env.VUE_APP_BASE_API}/article-service${article.value.photo}`
+    }
+})
 //表单验证规则
 const rules = reactive<FormRules>({
     title: [
@@ -184,12 +194,13 @@ async function save(form: FormInstance) {
                         ElMessage.warning(data.message)
                     } else {
                         ElMessage.success("操作成功")
+                        //更新目录节点
+                        instance?.proxy?.$bus.emit("updateArticleNode", article.value)
+                        emits("resetState")
                         setTimeout(() => {
                             emits("closeDialog")
                             emits("updateState")
                         }, 1000)
-                        //更新目录节点
-                        instance?.proxy?.$bus.emit("updateArticleNode", article.value)
                     }
                     loading.value = false
                 })
@@ -199,9 +210,6 @@ async function save(form: FormInstance) {
                     if (data.status === 200) {
                         ElMessage.success("发布成功")
                         article.value.id = data.result //获取返回的id
-                        setTimeout(() => {
-                            emits("closeDialog")
-                        }, 1000)
                         //更新目录节点
                         instance?.proxy?.$bus.emit("newArticle", { article: article.value })
                         //编辑文章已保存
@@ -211,6 +219,8 @@ async function save(form: FormInstance) {
                                 isEdit: 1,
                             },
                         })
+                        emits("resetState")
+                        emits("closeDialog")
                     } else {
                         ElMessage.warning(data.message)
                     }
@@ -274,7 +284,7 @@ if (props.isEdit) {
 }
 </script>
 
-<style>
+<style scoped>
 .submit {
     display: flex;
     justify-content: flex-end;
@@ -286,7 +296,7 @@ if (props.isEdit) {
 .tag-select {
     width: 100%;
 }
-.el-form-item__content {
+.select >>> .el-form-item__content {
     flex-wrap: nowrap;
 }
 .add-tag-btn {

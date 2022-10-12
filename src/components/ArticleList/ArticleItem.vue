@@ -19,8 +19,8 @@
             </div>
             <div class="article-count">
                 <svg-icon class="article-count-item count-views" icon-class="views">{{ data.meta?.viewCount || 0 }}</svg-icon>
-                <svg-icon class="article-count-item count-likes" :class="{ 'count-likes-active': data.meta?.isUserLike === 1 }" icon-class="likes">{{ data.meta?.isUserLike || 0 }}</svg-icon>
-                <svg-icon class="article-count-item count-star" :class="{ 'count-star-active': data.meta?.isUserCollection === 1 }" icon-class="star">{{ data.meta?.isUserCollection || 0 }}</svg-icon>
+                <svg-icon class="article-count-item count-likes" @click.stop="like(1)" :class="{ 'count-likes-active': data.meta?.isUserLike === 1 }" icon-class="likes">{{ data.meta?.likeCount || 0 }}</svg-icon>
+                <svg-icon class="article-count-item count-star" @click.stop="like(2)" :class="{ 'count-star-active': data.meta?.isUserCollection === 1 }" icon-class="star">{{ data.meta?.collectionCount || 0 }}</svg-icon>
                 <svg-icon class="article-count-item count-comment" icon-class="comment">{{ data.meta?.commentCount || 0 }}</svg-icon>
             </div>
         </div>
@@ -29,14 +29,18 @@
 </template>
 
 <script setup lang="ts">
-import { getCurrentInstance } from "vue"
+import { getCurrentInstance, ref } from "vue"
 import { useRouter } from "vue-router"
-import { Article } from "@/interface/article/article"
+import {useStore} from 'vuex'
 import { format } from "timeago.js"
+import { Article } from "@/interface/article/article"
+import { Response } from "@/interface/common/response"
+import { likeArticle } from "@/api/comment/like"
+import { ElMessage } from "element-plus"
 
 const instance = getCurrentInstance()
 const router = useRouter()
-defineProps<{
+const props = defineProps<{
     data: Article
 }>()
 
@@ -46,5 +50,26 @@ function getArticlePhoto(path) {
 //调用region组件的跳转方法
 function jumpRegion(region) {
     instance?.proxy?.$bus.emit("jumpRegion", region)
+}
+
+//文章点赞
+const likeAdd = ref(true)
+const collectionAdd = ref(true)
+function like(status: number) {
+    likeArticle(props.data.id, status).then((data: Response<string>) => {
+        if (data.status !== 200) {
+            ElMessage.warning(data.message)
+        } else {
+            if (status === 1) {
+                likeAdd.value && props.data.meta.isUserLike !== 1 ? props.data.meta.likeCount++ : props.data.meta.likeCount--
+                likeAdd.value = !likeAdd.value
+                props.data.meta.isUserLike = props.data.meta.isUserLike == 1 ? 0 : 1
+            } else {
+                collectionAdd.value && props.data.meta.isUserCollection !== 1 ? props.data.meta.collectionCount++ : props.data.meta.collectionCount--
+                collectionAdd.value = !collectionAdd.value
+                props.data.meta.isUserCollection = props.data.meta.isUserCollection == 1 ? 0 : 1
+            }
+        }
+    })
 }
 </script>

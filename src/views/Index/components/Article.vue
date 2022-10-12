@@ -85,12 +85,11 @@ watch(
 
 function getArticleLit(needFlush = false) {
     loading.value = true
-    listArticle(state.pageIndex, 10, condidtion)
+    listArticle(needFlush ? 1 : state.pageIndex, 10, condidtion)
         .then((data: Response<PageBean<Array<Article>>>) => {
             if (data.status !== 200) {
                 ElMessage.warning("数据拉取失败")
             }
-            //将结果保存
             if (state.pageIndex !== 1 && !needFlush) {
                 state.page.push(...data.result.page)
             } else {

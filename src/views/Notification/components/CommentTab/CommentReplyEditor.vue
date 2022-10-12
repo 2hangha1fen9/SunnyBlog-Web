@@ -1,53 +1,62 @@
 <template>
-    <div class="comment-editor">
+    <div class="comment-reply">
         <div id="vditor"></div>
-        <div class="comment-bar">
-            <div class="comment-toreply">
-                <Avatar v-if="reply" :photo="photo" :username="username" :showUsername="false"></Avatar>
-
-                <div class="comment-toreply-content">
-                    <p v-if="reply">
-                        回复: @{{ reply.nick || reply.username }}
-                        <el-link type="primary" @click="cleanToReply">取消</el-link>
-                    </p>
-                    <div ref="toReplyContent" class="toreply-content"></div>
+        <div style="display: flex; justify-content: flex-end; margin-top: 10px">
+            <el-button type="success" :loading="btnLoading" @click="sendComment" style="">回复</el-button>
+        </div>
+    </div>
+    <div class="comment-info">
+        <Avatar class="user-avatar-box" :photo="photo" :showUsername="false" />
+        <div class="comment-content">
+            <div class="comment-meta">
+                <div style="white-space: nowarp">
+                    <el-link href="#">{{ comment.nick || comment.username }}</el-link>
+                    在
+                    <el-link :href="`/article/${comment.articleId}`" target="_blank">{{ comment.articleTitle }}</el-link>
+                    发表了评论
                 </div>
+                <div style="white-space: nowrap">{{ format(comment?.createTime, "zh_CN") }}</div>
             </div>
-            <el-button type="success" :loading="btnLoading" @click="sendComment">发表评论</el-button>
+            <div class="comment-words" ref="commentRef"></div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed, reactive, getCurrentInstance, onUnmounted, nextTick } from "vue"
-import { useStore } from "vuex"
-import Vditor from "vditor"
-import Avatar from "@/components/Avatar.vue"
+import { computed, reactive, nextTick, ref, getCurrentInstance, onMounted } from "vue"
+import { format } from "timeago.js"
 import "vditor/dist/index.css"
+import Vditor from "vditor"
 import { ElMessage } from "element-plus"
+import Avatar from "@/components/Avatar.vue"
 import { Response } from "@/interface/common/response"
 import { Comment } from "@/interface/comment/comment"
-import { uploadPicture } from "@/api/comment/drawing-bed"
 import { publishComment } from "@/api/comment/comment"
 
-const store = useStore()
-const instance = getCurrentInstance()
-const username = computed(() => store.getters["identity/username"])
-const photo = computed(() => store.getters["identity/photo"])
-const isLogin = computed(() => store.getters["identity/isValid"])
-const reply = ref<Comment>()
+const commentRef = ref()
 const btnLoading = ref(false)
-const toReplyContent = ref()
-
 const props = defineProps<{
-    aid: string
+    comment: Comment
+}>()
+const emits = defineEmits<{
+    (event: "closeDialog"): void
+    (event: "deleteMessage", cid: number): void
 }>()
 const state = reactive<Comment>({
-    articleId: props?.aid,
-    parentId: null,
+    articleId: props?.comment.articleId,
+    parentId: props?.comment.id,
     content: null,
 })
 
+//获取照片真实路径
+const photo = computed(() => {
+    if (props?.comment.photo) {
+        return `${process.env.VUE_APP_BASE_API}/user-service${props?.comment.photo}`
+    }
+    return null
+})
+
+//发送评论
 function sendComment() {
     //获取编辑框内容
     state.content = vditor.value?.getValue()
@@ -62,9 +71,8 @@ function sendComment() {
             if (data.status === 200) {
                 ElMessage.success(data.result)
                 vditor.value?.setValue("")
-                setTimeout(() => {
-                    instance?.proxy?.$bus.emit("listComment", true)
-                }, 1000)
+                emits("closeDialog")
+                emits("deleteMessage", props.comment.id)
             }
         })
         .finally(() => {
@@ -72,27 +80,13 @@ function sendComment() {
         })
 }
 
-//展示回复人的信息
-function replyComment(comment: Comment) {
-    reply.value = comment
-    state.parentId = reply.value?.id
-    nextTick(() => {
-        Vditor.preview(toReplyContent.value, reply?.value.content, {
-            markdown: {
-                mark: true,
-            },
-        })
+nextTick(() => {
+    Vditor.preview(commentRef.value, props?.comment.content, {
+        markdown: {
+            mark: true,
+        },
     })
-}
-instance?.proxy?.$bus.on("replyComment", replyComment)
-
-//清空回复者信息
-function cleanToReply() {
-    reply.value = null
-    state.parentId = null
-    vditor.value?.setValue("")
-    toReplyContent.value.innerHTML = ""
-}
+})
 
 //markdown编辑器
 const vditor = ref<Vditor | null>(null)
@@ -107,7 +101,6 @@ onMounted(() => {
         cache: {
             enable: false,
         },
-        placeholder: "善语善人心,恶言伤人心~",
         toolbar: ["emoji", "undo", "redo", "upload"],
         upload: {
             //自定义上传逻辑
@@ -129,18 +122,30 @@ onMounted(() => {
         },
     })
 })
-
-onUnmounted(() => {
-    instance?.proxy?.$bus.all.delete("replyComment")
-})
 </script>
 
 <style scoped>
-#vditor {
-    border: none;
-    border-bottom: 1px solid var(--border-color);
-}
 #vditor >>> .vditor-toolbar {
     background-color: #fff !important;
+}
+
+.comment-info {
+    display: flex;
+    flex-direction: row;
+    margin-top: 15px;
+}
+.comment-content {
+    width: 100%;
+    padding-inline-start: 20px;
+    padding-inline-end: 20px;
+}
+.comment-meta {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+.comment-words {
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 </style>

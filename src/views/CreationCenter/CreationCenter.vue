@@ -14,4 +14,3 @@ import Main from "./components/Main/Main.vue"
 import SideBar from "./components/SideBar/SideBar.vue"
 </script>
 
-<style></style>

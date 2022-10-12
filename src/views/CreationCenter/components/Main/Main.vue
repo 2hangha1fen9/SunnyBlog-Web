@@ -17,8 +17,8 @@
                     </template>
                     <template #default>
                         <el-menu class="dropdown-menu" active-text-color="#303133">
-                            <el-menu-item index="0" @click="router.push('/')">首页</el-menu-item>
-                            <el-menu-item index="2">内容管理</el-menu-item>
+                            <el-menu-item index="0"><a href="/" target="blank" style="text-decoration: none; height: 100%; width: 100%; color: black">首页</a></el-menu-item>
+                            <el-menu-item index="2" @click="artDialogVisible = true">文章管理</el-menu-item>
                             <el-menu-item index="2" @click="tagDialogVisible = true">标签管理</el-menu-item>
                             <el-menu-item index="2" @click="restoreDialogVisible = true">回收站</el-menu-item>
                         </el-menu>
@@ -29,6 +29,10 @@
         <div class="main">
             <!-- markdown编辑器 -->
             <div id="vditor"></div>
+            <!-- 文章管理对话框 -->
+            <el-dialog align-center fullscreen width="60%" v-model="artDialogVisible" v-if="artDialogVisible" title="文章管理">
+                <ArticleManager @closeDialog="artDialogVisible = false" />
+            </el-dialog>
             <!-- 文章保存对话框 -->
             <el-dialog align-center @close="setBtnLoading = false" v-model="setDialogVisible" v-if="setDialogVisible" title="发布文章">
                 <ArticleSettingPanel :article="article" :isEdit="isEdit" @closeDialog="setDialogVisible = setBtnLoading = false"></ArticleSettingPanel>
@@ -52,18 +56,18 @@ import { ref, onMounted, computed, watch, nextTick, getCurrentInstance, onUnmoun
 import { useStore } from "vuex"
 import { useRoute, useRouter } from "vue-router"
 import { ElMessage } from "element-plus"
-import ArticleSettingPanel from "./ArticleSettingPanel.vue"
-import ArticleRecycleBin from "./ArticleRecycleBin.vue"
+import ArticleSettingPanel from "../Dialog/ArticleSettingPanel.vue"
+import ArticleRecycleBin from "../Dialog/ArticleRecycleBin.vue"
+import ArticleManager from "../Dialog/ArticleManager.vue"
 import Hamburger from "../SideBar/Hamburger.vue"
 import Avatar from "@/components/Avatar.vue"
-import TagManager from "./TagManager.vue"
+import TagManager from "../Dialog/TagManager.vue"
 //接口
 import { Article } from "@/interface/article/article"
 import { Response } from "@/interface/common/response"
 // api
 import { uploadPicture } from "@/api/article/drawing-bed"
 import { updateArticle, getArticle } from "@/api/article/article"
-import { sum } from "lodash-es"
 
 const router = useRouter()
 const route = useRoute()
@@ -85,8 +89,12 @@ const article = ref<Article>({})
 const restoreDialogVisible = ref(false)
 //添加标签对话框
 const tagDialogVisible = ref(false)
+//文章管理对话框
+const artDialogVisible = ref(false)
 //markdown编辑器
 const vditor = ref<Vditor | null>(null)
+//自动保存定时器 间隔5分钟
+let autoSaveTimer = null
 
 //侧边栏切换
 function toggleSideBar() {
@@ -158,6 +166,12 @@ function initEditor() {
             })
         },
     })
+
+    //自动保存定时器
+    clearInterval(autoSaveTimer)
+    autoSaveTimer = setInterval(() => {
+        staticSaveArticle(true)
+    }, 1000 * 60 * 5)
 }
 
 //获取文章摘要
@@ -170,7 +184,7 @@ function getSummary() {
             summary += e.innerText
         }
     }
-    article.value.summary = summary.substring(0,200)
+    article.value.summary = summary.substring(0, 200)
 }
 
 //保存文章
@@ -239,8 +253,6 @@ function resetArticle(aid: number) {
     }
 }
 
-//自动保存定时器 间隔5分钟
-let autoSaveTimer = null
 onMounted(() => {
     initEditor()
     //监视路由query参数
@@ -260,10 +272,6 @@ onMounted(() => {
             staticSaveArticle()
         }
     })
-    //自动保存定时器
-    autoSaveTimer = setInterval(() => {
-        staticSaveArticle(true)
-    }, 1000 * 60 * 5)
 })
 
 onUnmounted(() => {

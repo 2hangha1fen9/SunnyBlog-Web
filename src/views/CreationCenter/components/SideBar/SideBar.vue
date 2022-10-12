@@ -1,13 +1,11 @@
 <template>
     <nav :class="{ 'side-container': true, 'side-collapse': sidebar.opened }" @contextmenu="showContextMenu">
-        <el-scrollbar max-height="100%" style="width: inherit">
-            <CategoryTree @getContextNode="setContextNode" @newCategorySuccess="newCategorySuccess" />
-        </el-scrollbar>
+        <CategoryTree @getContextNode="setContextNode" @newCategorySuccess="newCategorySuccess" />
         <!-- 添加目录对话框 -->
         <el-dialog v-model="cateDialogVisible" v-if="cateDialogVisible" title="新建目录">
             <el-form :model="categoryState" label-width="80px" ref="formRef" :rules="rules">
                 <el-form-item label="名称" required prop="name">
-                    <el-input v-model="categoryState.name" @keyup.enter="newCategory(formRef)" />
+                    <el-input v-model="categoryState.name" @keyup.enter="newCategory(formRef)" :autofocus="true" />
                 </el-form-item>
                 <el-form-item label="上级目录" prop="regionId">
                     <el-tree-select
@@ -30,7 +28,7 @@
         </el-dialog>
         <!-- 添加文章对话框 -->
         <el-dialog align-center v-model="ArtDialogVisible" v-if="ArtDialogVisible" title="发布文章">
-            <ArticleSettingPanel :article="articleState" :isEdit="false" @closeDialog="ArtDialogVisible = false"></ArticleSettingPanel>
+            <ArticleSettingPanel :article="articleState" :isEdit="false" @closeDialog="ArtDialogVisible = false" @resetState="newArticleSuccess"></ArticleSettingPanel>
         </el-dialog>
     </nav>
 </template>
@@ -40,13 +38,12 @@ import { useStore } from "vuex"
 import { computed } from "vue"
 import { getCurrentInstance, ref, reactive } from "vue"
 import CategoryTree from "./CategoryTree.vue"
-import ArticleSettingPanel from "../Main/ArticleSettingPanel.vue"
+import ArticleSettingPanel from "../Dialog/ArticleSettingPanel.vue"
 import { ElMessage } from "element-plus"
 //上下文菜单
 import { menusEvent } from "vue3-menus"
 import type { FormRules, FormInstance } from "element-plus"
 import { Category } from "@/interface/article/category"
-import { ElMessageBox } from "element-plus"
 import { listCategory } from "@/api/article/category"
 import { Article } from "@/interface/article/article"
 
@@ -79,6 +76,22 @@ const newOption = {
     label: "新建",
     children: [
         {
+            label: "文章",
+            click: () => {
+                //初始化默认父级目录
+                if (currentNode.value) {
+                    if (currentNode.value.isArticle) {
+                        articleState.value.categoryId = currentNode.value.categoryId === 0 ? null : currentNode.value.categoryId
+                    } else if (!currentNode.value.isArticle) {
+                        articleState.value.categoryId = currentNode.value.id
+                    }
+                } else {
+                    articleState.value.categoryId = null
+                }
+                ArtDialogVisible.value = true
+            },
+        },
+        {
             label: "目录",
             click: () => {
                 cateDialogVisible.value = true
@@ -101,29 +114,13 @@ const newOption = {
                 })
             },
         },
-        {
-            label: "文章",
-            click: () => {
-                //初始化默认父级目录
-                if (currentNode.value) {
-                    if (currentNode.value.isArticle) {
-                        articleState.value.categoryId = currentNode.value.categoryId === 0 ? null : currentNode.value.categoryId
-                    } else if (!currentNode.value.isArticle) {
-                        articleState.value.categoryId = currentNode.value.id
-                    }
-                } else {
-                    articleState.value.categoryId = null
-                }
-                ArtDialogVisible.value = true
-            },
-        },
     ],
 }
 const delOption = {
     label: "删除",
     click: () => {
         if (currentNode.value) {
-            instance?.proxy?.$bus.emit("deleteNode", currentNode.value)
+            instance?.proxy?.$bus.emit("deleteNode", { node: currentNode.value })
         }
     },
     disabled: false,
@@ -183,6 +180,13 @@ function newCategorySuccess() {
     cateLoading.value = false
     categoryState.value.name = ""
     categoryState.value.parentId = null
+}
+//创建文章成功回调
+function newArticleSuccess() {
+    articleState.value = {}
+    articleState.value.status = 4
+    articleState.value.commentStatus = 1
+    articleState.value.isLock = 1
 }
 </script>
 

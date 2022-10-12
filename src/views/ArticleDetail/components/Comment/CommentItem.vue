@@ -46,6 +46,6 @@ nextTick(() => {
 
 function reply(comment: Comment) {
     instance?.proxy?.$bus.emit("replyComment", comment)
-    window.scrollTo({ top: document.getElementById("comment")?.offsetTop, behavior: "smooth" }) //滚动到页面顶部
+    window.scrollTo({ top: document.getElementById("vditor")?.offsetTop, behavior: "smooth" }) //滚动到页面顶部
 }
 </script>

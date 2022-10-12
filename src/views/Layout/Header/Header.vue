@@ -1,22 +1,23 @@
 <template>
-    <header :class="{ 'header-container': true, 'header-up': !visible }">
+    <header :class="{ 'header-container': true, 'header-up': !visible }" id="header">
         <div class="left-container">
-            <svg-icon icon-class="sunny" id="logo" />
-            <h3>SunnyBlog</h3>
+            <svg-icon icon-class="sunny" id="logo" @click="router.push('/')" />
+            <h3 @click="router.push('/')" style="cursor: pointer">SunnyBlog</h3>
             <el-menu class="links" mode="horizontal" router :ellipsis="true">
-                <el-menu-item index="/index" style="background: none">首页</el-menu-item>
+                <!-- <el-menu-item index="/index" style="background: none">首页</el-menu-item>
                 <el-menu-item index="/rank" style="background: none">排行榜</el-menu-item>
-                <el-menu-item index="/rank" style="background: none">开源</el-menu-item>
+                <el-menu-item index="/rank" style="background: none">开源</el-menu-item> -->
             </el-menu>
         </div>
         <div class="right-container">
             <SearchBar />
             <!-- 创作中心 -->
-            <el-button type="primary" @click="router.push('/creation')">创作中心</el-button>
+            <el-button type="primary" @click="jumpCreation">创作中心</el-button>
             <!-- 头像 -->
             <p class="avatar-container" v-if="isValid">
                 <Avatar :photo="photo" :username="username" :showUsername="false"></Avatar>
             </p>
+            <svg-icon v-if="isValid" class="notify-btn" icon-class="notify" @click="router.push('/notification')">消息</svg-icon>
             <el-button round class="d" @click="toggleState">{{ isValid ? "登出" : "登录" }}</el-button>
         </div>
     </header>
@@ -50,14 +51,27 @@ function toggleState() {
 
 //监视滚动条,顶部header离开可视区域隐藏
 const visible = ref(true)
+//需要收起的组件
+const scrollList = ref([/index/i, /article/i])
 function watchScroll() {
     //变量scrollTop是滚动条滚动时，距离顶部的距离
     var scrollTop = document.documentElement.scrollTop || document.body.scrollTop
     if (scrollTop > 60) {
-        visible.value = false
+        scrollList.value.forEach((r) => {
+            if (r.test(decodeURIComponent(route.path))) {
+                visible.value = false
+            }
+        })
     } else {
         visible.value = true
     }
+}
+
+function jumpCreation() {
+    let url = router.resolve({
+        path: `/creation/`,
+    })
+    window.open(url.href, "_blank")
 }
 
 onMounted(() => {
@@ -104,6 +118,7 @@ onMounted(() => {
 
 .avatar-container {
     width: 50px;
+    padding: 5px;
 }
 
 .right-container >>> .el-input__wrapper {
@@ -122,5 +137,14 @@ onMounted(() => {
     background: none;
     height: 100%;
     width: 100%;
+}
+
+.notify-btn {
+    padding: 5px;
+    color: gray;
+    cursor: pointer;
+}
+.notify-btn:hover {
+    color: skyblue;
 }
 </style>
