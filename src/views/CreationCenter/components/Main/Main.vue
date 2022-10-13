@@ -18,6 +18,7 @@
                     <template #default>
                         <el-menu class="dropdown-menu" active-text-color="#303133">
                             <el-menu-item index="0"><a href="/" target="blank" style="text-decoration: none; height: 100%; width: 100%; color: black">首页</a></el-menu-item>
+                            <el-menu-item index="0"><a :href="`/user/${userId}`" target="blank" style="text-decoration: none; height: 100%; width: 100%; color: black">个人主页</a></el-menu-item>
                             <el-menu-item index="2" @click="artDialogVisible = true">文章管理</el-menu-item>
                             <el-menu-item index="2" @click="tagDialogVisible = true">标签管理</el-menu-item>
                             <el-menu-item index="2" @click="restoreDialogVisible = true">回收站</el-menu-item>
@@ -76,6 +77,7 @@ const store = useStore() //使用vuex
 //汉堡按钮状态
 const sidebar = computed(() => store.getters["sidebar/sidebar"])
 // 头像数据
+const userId = computed(() => store.getters["identity/userId"])
 const username = computed(() => store.getters["identity/username"])
 const photo = computed(() => store.getters["identity/photo"])
 

@@ -5,8 +5,10 @@ export interface User {
     nick?: string
     remark?: string
     photo?: string
+    cover?: string
     sex?: number
     fans?: number
+    follows?: number
 }
 
 //用户详情

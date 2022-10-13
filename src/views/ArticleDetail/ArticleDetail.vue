@@ -33,6 +33,7 @@ import { Article, Meta } from "@/interface/article/article"
 import { Response } from "@/interface/common/response"
 import { getArticleDetail } from "@/api/article/article"
 import { getArticleMeta } from "@/api/comment/meta"
+import { addViewCount } from "@/api/comment/views"
 import { getUser } from "@/api/user/user"
 
 const router = useRouter()
@@ -72,6 +73,8 @@ if (state.value) {
             })
             //获取用户信息
             getUserInfo(state.value.userId)
+            //增加文章访问量
+            addViewCount(state.value.id)
         })
 }
 
@@ -164,6 +167,7 @@ function getUserInfo(uid: number) {
 
 /* 右侧用户卡片 */
 .user-info {
+    cursor: pointer;
     box-sizing: border-box;
     padding: 20px;
     background-color: white;

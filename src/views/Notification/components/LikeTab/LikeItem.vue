@@ -2,7 +2,7 @@
     <li class="like-item">
         <Avatar class="user-avatar-box" :photo="photo" :showUsername="false" />
         <div class="like-content">
-            <el-link href="#">{{ like.nick || like.username }}</el-link>
+            <el-link :href="`/user/${comment.userId}`" target="_blank">{{ like.nick || like.username }}</el-link>
             在
             <el-link :href="`/article/${like.articleId}`" target="_blank">{{ like.articleTitle }}</el-link>
             给你点赞

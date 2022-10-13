@@ -27,10 +27,18 @@ watch(route, (newVal) => {
 
 const regions = ref<Array<Region>>([])
 function getRegionList() {
-    listRegion().then((data: Response<Array<Region>>) => {
-        regions.value = data.result
-        defaultActive.value = decodeURI(route.path)
-    })
+    listRegion()
+        .then((data: Response<Array<Region>>) => {
+            regions.value = data.result
+            defaultActive.value = decodeURI(route.path)
+        })
+        .then(() => {
+            //如果路径含有region参数则跳转到相应region
+            let region = route.query["region"]
+            if (region) {
+                jumpRegion(region)
+            }
+        })
 }
 getRegionList()
 
@@ -66,11 +74,12 @@ function getRegionPath(regions: Array<Region>, result: string, key: string): str
 }
 
 //跳转某个分区方法
-instance?.proxy.$bus.on("jumpRegion", (region) => {
+instance?.proxy.$bus.on("jumpRegion", jumpRegion)
+function jumpRegion(region: string) {
     state = false
     let regionPath = getRegionPath(regions.value, "", region)
     router.push(`/index${regionPath}`)
-})
+}
 
 onBeforeUnmount(() => {
     instance?.proxy?.$bus.all.delete("jumpRegion")

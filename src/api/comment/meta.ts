@@ -18,3 +18,13 @@ export function getArticleMetaList(aids: Array<number>) {
         data: aids
     })
 }
+
+//获取用户的点赞收藏浏览数据
+export function getUserMeta(uid: number) {
+    return request({
+        url: '/comment-service/meta/getUserMeta',
+        params: {
+            uid: uid
+        }
+    })
+}

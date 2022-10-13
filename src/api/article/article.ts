@@ -28,6 +28,35 @@ export function listMyArticle(pageIndex?: number | 1, pageSize?: number | 10, co
     })
 }
 
+//列出用户文章列表
+export function listUserArticle(uid: number, pageIndex?: number | 1, pageSize?: number | 10, condition?: Array<SearchCondidtion>) {
+    return request({
+        url: '/article-service/article/user',
+        method: 'get',
+        params: {
+            uid: uid,
+            pageIndex: pageIndex,
+            pageSize: pageSize,
+            condition: JSON.stringify(condition)
+        }
+    })
+}
+
+//列出用户文章列表
+export function listUserLikeArticle(uid: number, isLike = true, pageIndex?: number | 1, pageSize?: number | 10, condition?: Array<SearchCondidtion>) {
+    return request({
+        url: '/article-service/article/userLike',
+        method: 'get',
+        params: {
+            uid: uid,
+            isLike: isLike,
+            pageIndex: pageIndex,
+            pageSize: pageSize,
+            condition: JSON.stringify(condition)
+        }
+    })
+}
+
 //获取文章详情
 export function getArticleDetail(aid: number) {
     return request({

@@ -4,7 +4,7 @@
         <div class="comment-content">
             <div class="comment-meta">
                 <div style="white-space: nowarp">
-                    <el-link href="#">{{ comment.nick || comment.username }}</el-link>
+                    <el-link :href="`/user/${comment.userId}`" target="_blank">{{ comment.nick || comment.username }}</el-link>
                     在
                     <el-link :href="`/article/${comment.articleId}`" target="_blank">{{ comment.articleTitle }}</el-link>
                     发表了评论
@@ -81,6 +81,7 @@ function allow() {
 function reply() {
     emits("replyMessage", props.comment)
 }
+
 </script>
 
 <style scoped>

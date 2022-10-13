@@ -1,30 +1,30 @@
 <template>
-    <div class="user-info" @click="jumpUser">
-        <div class="user-avatar">
-            <Avatar class="user-avatar" :photo="photo" :username="state?.nick || state?.username" :showUsername="true" />
-            <p>{{ state?.remark }}</p>
-            <p>关注者:{{ state?.fans }}</p>
-            <el-button class="watch-btn" :type="isWatch ? 'success' : 'primary'" @click.stop="watchUserInfo" :loading="loading">{{ isWatch ? "取消关注" : "关注" }}</el-button>
+    <li class="follow-item">
+        <div class="follow-avatar">
+            <Avatar class="user-avatar-box" :photo="photo" :showUsername="false" />
+            <div>
+                <el-link :href="`/user/${state.userId}`" target="_blank">{{ state.nick || state.username }}</el-link>
+                <p class="user-remark">{{ state.remark }}</p>
+            </div>
         </div>
-    </div>
+        <el-button size="small" :type="isWatch ? 'success' : 'primary'" @click="watchUserInfo" :loading="loading">{{ isWatch ? "取消关注" : "关注" }}</el-button>
+    </li>
 </template>
 
 <script setup lang="ts">
 import Avatar from "@/components/Avatar.vue"
 import { computed, ref, watch } from "vue"
-import { useRouter } from "vue-router"
 import { useStore } from "vuex"
-import { User } from "@/interface/user/user"
+import { Watch } from "@/interface/user/watch"
 import { Response } from "@/interface/common/response"
 import { watchUser, watchStatus } from "@/api/user/watch"
 import { ElMessage } from "element-plus"
 
-const router = useRouter()
 const store = useStore()
 const props = defineProps<{
-    user: User
+    watch: Watch
 }>()
-const state = ref<User>(props?.user)
+const state = ref<Watch>(props?.watch)
 
 const photo = computed(() => {
     if (state.value) {
@@ -38,7 +38,7 @@ const loading = ref(false)
 //关注用户
 function watchUserInfo() {
     loading.value = true
-    watchUser(state.value?.id)
+    watchUser(state.value?.userId)
         .then((data: Response<string>) => {
             if (data.status === 200) {
                 ElMessage.success(data.result)
@@ -56,7 +56,7 @@ function watchUserInfo() {
 function status() {
     if (isLogin) {
         console.log(state.value)
-        watchStatus(state.value?.id).then((data: Response<boolean>) => {
+        watchStatus(state.value?.userId).then((data: Response<boolean>) => {
             if (data.status === 200) {
                 isWatch.value = data.result
             }
@@ -64,17 +64,30 @@ function status() {
     }
 }
 
-//跳转用户主页
-function jumpUser() {
-    //跳转到首页分类
-    let url = router.resolve({
-        path: `/user/${state.value?.id}`,
-    })
-    window.open(url.href, "_blank")
-}
-
+status()
 watch(props, (newVal) => {
     state.value = newVal.user
     status()
 })
 </script>
+
+<style scoped>
+.follow-item {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 15px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 0.5px solid lightgray;
+    padding: 10px 0px;
+}
+.follow-avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.user-avatar-box {
+    margin-right: 10px;
+}
+</style>

@@ -2,7 +2,7 @@
     <li class="article-block">
         <div class="article-main">
             <div class="article-meta">
-                <el-link @click.stop="router.push(`/user/${data.userId}`)">{{ data.nick || data.username }}</el-link>
+                <el-link @click.stop="jumpUser(data.userId)">{{ data.nick || data.username }}</el-link>
 
                 <el-divider direction="vertical" v-if="data.createTime" />
                 <span>{{ format(data.createTime, "zh_CN") }}</span>
@@ -11,7 +11,7 @@
                 <el-link @click.stop="jumpRegion(data.regionName)">{{ data.regionName }}</el-link>
 
                 <el-divider direction="vertical" v-if="data.tags?.length > 0" />
-                <el-link v-for="tag in data.tags" :key="tag.name" class="tag" @click.stop="router.push({ query: { tag: tag.name } })">{{ tag.name }}</el-link>
+                <el-link v-for="tag in data.tags" :key="tag.name" class="tag" @click.stop="jumpTag(tag.name)">{{ tag.name }}</el-link>
             </div>
             <div class="article-intro">
                 <h3 class="article-title">{{ data.title }}</h3>
@@ -31,7 +31,7 @@
 <script setup lang="ts">
 import { getCurrentInstance, ref } from "vue"
 import { useRouter } from "vue-router"
-import {useStore} from 'vuex'
+import { useStore } from "vuex"
 import { format } from "timeago.js"
 import { Article } from "@/interface/article/article"
 import { Response } from "@/interface/common/response"
@@ -42,6 +42,7 @@ const instance = getCurrentInstance()
 const router = useRouter()
 const props = defineProps<{
     data: Article
+    isIndependent: boolean
 }>()
 
 function getArticlePhoto(path) {
@@ -49,7 +50,46 @@ function getArticlePhoto(path) {
 }
 //调用region组件的跳转方法
 function jumpRegion(region) {
-    instance?.proxy?.$bus.emit("jumpRegion", region)
+    if (props.isIndependent) {
+        //跳转到首页分类
+        let url = router.resolve({
+            path: "/index",
+            query: {
+                region: region,
+            },
+        })
+        window.open(url.href, "_blank")
+    } else {
+        instance?.proxy?.$bus.emit("jumpRegion", region)
+    }
+}
+function jumpTag(tag) {
+    if (props.isIndependent) {
+        //跳转到首页分类
+        let url = router.resolve({
+            path: "/index",
+            query: {
+                tag: tag,
+            },
+        })
+        window.open(url.href, "_blank")
+    } else {
+        router.push({
+            path: "/index",
+            query: {
+                tag: tag,
+            },
+        })
+    }
+}
+
+//跳转用户主页
+function jumpUser(uid) {
+    //跳转到首页分类
+    let url = router.resolve({
+        path: `/user/${uid}`,
+    })
+    window.open(url.href, "_blank")
 }
 
 //文章点赞

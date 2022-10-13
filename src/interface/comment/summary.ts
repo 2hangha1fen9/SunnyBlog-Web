@@ -7,3 +7,11 @@ export interface Summary {
     isUserLike: number  //该用户是否点赞
     isUserCollection: number    //该用户是否收藏
 }
+
+export interface UserSummary {
+    userId: number
+    viewCount: number   //浏览量
+    likeCount: number   //点赞量
+    commentCount: number    //评论数量
+    collectionCount: number //收藏数量
+}

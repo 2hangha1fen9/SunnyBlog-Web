@@ -14,11 +14,22 @@
             <!-- 创作中心 -->
             <el-button type="primary" @click="jumpCreation">创作中心</el-button>
             <!-- 头像 -->
-            <p class="avatar-container" v-if="isValid">
-                <Avatar :photo="photo" :username="username" :showUsername="false"></Avatar>
-            </p>
             <svg-icon v-if="isValid" class="notify-btn" icon-class="notify" @click="router.push('/notification')">消息</svg-icon>
-            <el-button round class="d" @click="toggleState">{{ isValid ? "登出" : "登录" }}</el-button>
+            <p class="avatar-container" v-if="isValid">
+                <el-popover>
+                    <template #reference>
+                        <Avatar :photo="photo" :username="username" :showUsername="false"></Avatar>
+                    </template>
+                    <template #default>
+                        <el-menu class="dropdown-menu" active-text-color="#303133">
+                            <el-menu-item index="0"><a :href="`/user/${userId}`" target="blank" style="text-decoration: none; height: 100%; width: 100%; color: black">个人主页</a></el-menu-item>
+                            <el-menu-item index="1" @click="toggleState">{{ isValid ? "登出" : "登录" }}</el-menu-item>
+                        </el-menu>
+                    </template>
+                </el-popover>
+            </p>
+
+            <el-button v-if="!isValid" round class="d" @click="toggleState">{{ isValid ? "登出" : "登录" }}</el-button>
         </div>
     </header>
 </template>
@@ -34,6 +45,7 @@ const store = useStore()
 const router = useRouter()
 const route = useRoute()
 
+const userId = computed(() => store.getters["identity/userId"])
 const username = computed(() => store.getters["identity/username"])
 const photo = computed(() => store.getters["identity/photo"])
 const isValid = computed(() => store.getters["identity/isValid"])
@@ -52,7 +64,7 @@ function toggleState() {
 //监视滚动条,顶部header离开可视区域隐藏
 const visible = ref(true)
 //需要收起的组件
-const scrollList = ref([/index/i, /article/i])
+const scrollList = ref([/index/i, /article/i, /user/i])
 function watchScroll() {
     //变量scrollTop是滚动条滚动时，距离顶部的距离
     var scrollTop = document.documentElement.scrollTop || document.body.scrollTop
@@ -146,5 +158,9 @@ onMounted(() => {
 }
 .notify-btn:hover {
     color: skyblue;
+}
+
+.dropdown-menu {
+    border: none;
 }
 </style>

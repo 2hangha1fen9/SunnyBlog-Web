@@ -24,6 +24,21 @@ export function getUnreadCommentList() {
     })
 }
 
+
+//获取用户发表的评论
+export function getCommentList(uid: number, pageIndex?: number | 1, pageSize?: number | 10, condition?: Array<SearchCondidtion>) {
+    return request({
+        url: "/comment-service/comment/user",
+        method: "get",
+        params: {
+            uid: uid,
+            pageIndex: pageIndex,
+            pageSize: pageSize,
+            condition: JSON.stringify(condition)
+        }
+    })
+}
+
 //删除已读评论
 export function readComment(cid: number, isAll = false) {
     return request({
@@ -45,6 +60,7 @@ export function authorDeleteComment(cid: number) {
         }
     })
 }
+
 //作者审核评论
 export function allowComment(cid: number) {
     return request({

@@ -11,9 +11,6 @@ const routes: Array<RouteRecordRaw> = [
         children: [
             {
                 path: '/index/:region*',
-                meta: {
-                    keepAlive: true
-                },
                 component: () => import('@/views/Index/Index.vue'),
                 props: true
             }
@@ -48,6 +45,50 @@ const routes: Array<RouteRecordRaw> = [
         path: '/creation',
         name: 'creation',
         component: () => import("@/views/CreationCenter/CreationCenter.vue"),
+    },
+    {
+        path: '/user',
+        name: 'user',
+        component: Layout,
+        children: [
+            {
+                path: '/user/:uid',
+                component: () => import('@/views/User/User.vue'),
+                props: true,
+                children: [
+                    {
+                        path: 'article',
+                        props: true,
+                        component: () => import('@/views/User/Tabs/Article/Article.vue'),
+                    },
+                    {
+                        path: 'comment',
+                        props: true,
+                        component: () => import('@/views/User/Tabs/Comment/Comment.vue'),
+                    },
+                    {
+                        path: 'like',
+                        props: true,
+                        component: () => import('@/views/User/Tabs/Like/Like.vue'),
+                    },
+                    {
+                        path: 'collection',
+                        props: true,
+                        component: () => import('@/views/User/Tabs/Collection/Collection.vue'),
+                    },
+                    {
+                        path: 'follow',
+                        props: true,
+                        component: () => import('@/views/User/Tabs/Follow/Follow.vue'),
+                    },
+                    {
+                        path: 'fans',
+                        props: true,
+                        component: () => import('@/views/User/Tabs/Fans/Fans.vue'),
+                    }
+                ]
+            }
+        ]
     },
     {
         path: '/identity',

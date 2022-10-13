@@ -24,12 +24,13 @@ export function watchStatus(id: number) {
 }
 
 //获取关注列表
-export function watchList(id: number, condition?: Array<SearchCondidtion>) {
+export function watchList(id: number, fans = false, condition?: Array<SearchCondidtion>) {
     return request({
         url: "/user-service/follow/list",
         method: "get",
         params: {
             id: id,
+            fans: fans,
             condition: JSON.stringify(condition)
         }
     })

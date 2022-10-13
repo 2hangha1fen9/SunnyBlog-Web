@@ -1,6 +1,6 @@
 <template>
     <ul class="article-container" style="padding-inline-start: 0">
-        <ArticleItem v-for="item in items.page" :data="item" :key="item.id" @click="jumpArticle(item.id)" />
+        <ArticleItem v-for="item in items.page" :data="item" :key="item.id" :isIndependent="isIndependent" @click="jumpArticle(item.id)" />
     </ul>
     <!-- 骨架屏 -->
     <el-skeleton v-for="item in 10" :key="item" class="article-container" :rows="4" animated :loading="loading" :throttle="500">
@@ -42,6 +42,7 @@ const router = useRouter()
 defineProps<{
     items: PageBean<Array<Article>>
     loading: boolean
+    isIndependent: boolean //文章列表是否有分区选项菜单
 }>()
 
 function jumpArticle(aid: number) {
@@ -55,7 +56,7 @@ function jumpArticle(aid: number) {
 <style>
 /* 主内容容器 */
 .article-container {
-    width: 700px;
+    width: 100%;
     max-width: 100%;
     margin: 0 auto;
 }

@@ -3,7 +3,7 @@ import { ElMessage } from 'element-plus'
 import store from '@/store/index'
 
 //路由白名单
-const whiteList = [/identity/i, /index/i, /article/i, /404/i]
+const whiteList = [/identity/i, /index/i, /article/i, /404/i, /user/i]
 
 router.beforeEach(async (to, from, next) => {
     if (store.getters['identity/isValid']) {
