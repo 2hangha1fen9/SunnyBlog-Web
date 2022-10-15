@@ -1,7 +1,7 @@
 export interface Comment {
     id: number
     articleId: number
-    articleTitle:string
+    articleTitle: string
     userId: number
     photo: string
     nick: string
@@ -9,5 +9,6 @@ export interface Comment {
     content: string
     createTime: string
     parentId: number
+    status: number
     inverseParent: Array<Comment>
 }

@@ -2,16 +2,16 @@
     <li class="like-item">
         <Avatar class="user-avatar-box" :photo="photo" :showUsername="false" />
         <div class="like-content">
-            <el-link :href="`/user/${comment.userId}`" target="_blank">{{ like.nick || like.username }}</el-link>
-            在
+            <el-link :href="`/user/${like.userId}`" target="_blank">{{ like.nick || like.username }}</el-link>
+            赞了
             <el-link :href="`/article/${like.articleId}`" target="_blank">{{ like.articleTitle }}</el-link>
-            给你点赞
         </div>
         <el-button size="small" @click="remove">删除</el-button>
     </li>
 </template>
 
 <script setup lang="ts">
+import Avatar from "@/components/Avatar.vue"
 import { computed } from "vue"
 import { format } from "timeago.js"
 import { Response } from "@/interface/common/response"

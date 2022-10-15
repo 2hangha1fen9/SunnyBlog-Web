@@ -3,7 +3,7 @@
         <Avatar class="user-avatar-box" :photo="photo" :showUsername="false" />
         <div class="comment-container">
             <div class="comment-meta">
-                <p class="comment-username">{{ comment.nick || comment.username }}</p>
+                <el-link class="comment-username" :href="`/user/${comment.userId}`" target="_blank">{{ comment.nick || comment.username }}</el-link>
                 <p class="comment-publish-time">{{ format(comment?.createTime, "zh_CN") }}</p>
             </div>
             <div class="comment-content" ref="commentRef"></div>

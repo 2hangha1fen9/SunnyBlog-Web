@@ -2,7 +2,7 @@
     <li class="follow-item">
         <div class="follow-avatar">
             <Avatar class="user-avatar-box" :photo="photo" :showUsername="false" />
-            <el-link style="margin: 5px" :href="`/user/${watch.userId}`" target="_blank">{{ watch.nick || watch.username }}</el-link>
+            <el-link style="margin: 5px" :href="`/user/${watch?.userId}`" target="_blank">{{ watch?.nick || watch?.username }}</el-link>
             关注了你
         </div>
         <el-button size="small" @click="remove">删除</el-button>
@@ -45,6 +45,7 @@ function remove() {
     flex-direction: row;
     margin-bottom: 15px;
     justify-content: space-between;
+    align-items: center;
 }
 .follow-avatar {
     display: flex;

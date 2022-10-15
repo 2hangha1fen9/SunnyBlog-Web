@@ -6,19 +6,7 @@
         </div>
     </div>
     <div class="comment-info">
-        <Avatar class="user-avatar-box" :photo="photo" :showUsername="false" />
-        <div class="comment-content">
-            <div class="comment-meta">
-                <div style="white-space: nowarp">
-                    <el-link href="#">{{ comment.nick || comment.username }}</el-link>
-                    在
-                    <el-link :href="`/article/${comment.articleId}`" target="_blank">{{ comment.articleTitle }}</el-link>
-                    发表了评论
-                </div>
-                <div style="white-space: nowrap">{{ format(comment?.createTime, "zh_CN") }}</div>
-            </div>
-            <div class="comment-words" ref="commentRef"></div>
-        </div>
+        <CommentListItem :comment="comment" :showUsername="true" />
     </div>
 </template>
 
@@ -27,6 +15,7 @@ import { computed, reactive, nextTick, ref, getCurrentInstance, onMounted } from
 import { format } from "timeago.js"
 import "vditor/dist/index.css"
 import Vditor from "vditor"
+import CommentListItem from "@/components/CommentListItem.vue"
 import { ElMessage } from "element-plus"
 import Avatar from "@/components/Avatar.vue"
 import { Response } from "@/interface/common/response"

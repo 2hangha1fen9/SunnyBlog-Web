@@ -42,5 +42,3 @@ function jumpArticleList(tagName: string) {
     window.open(url.href, "_blank")
 }
 </script>
-
-<style></style>

@@ -1,27 +1,5 @@
 <template>
-    <li class="comment-item">
-        <Avatar class="user-avatar-box" :photo="photo" :showUsername="false" />
-        <div class="comment-content">
-            <div class="comment-meta">
-                <div style="white-space: nowarp">
-                    <el-link :href="`/user/${comment.userId}`" target="_blank">{{ comment.nick || comment.username }}</el-link>
-                    在
-                    <el-link :href="`/article/${comment.articleId}`" target="_blank">{{ comment.articleTitle }}</el-link>
-                    发表了评论
-                </div>
-                <div style="white-space: nowrap">{{ format(comment?.createTime, "zh_CN") }}</div>
-            </div>
-            <div class="comment-words" ref="commentRef"></div>
-            <div class="comment-btns">
-                <div>
-                    <svg-icon class="action-btn reply" icon-class="comment" @click="reply">回复</svg-icon>
-                    <svg-icon class="action-btn allow" icon-class="views" v-if="comment.status === 2" @click="allow">允许显示</svg-icon>
-                    <svg-icon class="action-btn delete" icon-class="delete" @click="remove">删除</svg-icon>
-                </div>
-                <el-button size="small" @click="read">已读</el-button>
-            </div>
-        </div>
-    </li>
+    <Comment>
 </template>
 
 <script setup lang="ts">
@@ -33,6 +11,7 @@ import Avatar from "@/components/Avatar.vue"
 import { Response } from "@/interface/common/response"
 import { Comment } from "@/interface/comment/comment"
 import { readComment, authorDeleteComment, allowComment } from "@/api/comment/comment"
+import Comment from "@/components/CommentListItem.vue"
 
 const props = defineProps<{
     comment: Comment

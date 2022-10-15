@@ -17,7 +17,7 @@ instance?.proxy?.$bus.on("renderArticle", renderArticle)
 function renderArticle(data: Article) {
     nextTick(() => {
         article.value = data
-        Vditor.preview(content.value, article.value.content, {
+        Vditor.preview(content.value, article.value.content || "", {
             markdown: {
                 toc: true,
                 mark: true,

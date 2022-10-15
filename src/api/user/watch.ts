@@ -1,5 +1,7 @@
 import request from '@/utils/request'
 import { SearchCondidtion } from '@/interface/common/search-condition'
+import store from '@/store/index'
+const userId = store.getters["identity/userId"]
 
 //关注某用户
 export function watchUser(id: number) {
@@ -18,19 +20,22 @@ export function watchStatus(id: number) {
         url: "/user-service/follow/status",
         method: "get",
         params: {
-            id: id
+            id: id,
+            reqid: userId
         }
     })
 }
 
 //获取关注列表
-export function watchList(id: number, fans = false, condition?: Array<SearchCondidtion>) {
+export function watchList(id: number, fans = false, pageIndex?: number | 1, pageSize?: number | 10, condition?: Array<SearchCondidtion>) {
     return request({
         url: "/user-service/follow/list",
         method: "get",
         params: {
             id: id,
             fans: fans,
+            pageIndex: pageIndex,
+            pageSize: pageSize,
             condition: JSON.stringify(condition)
         }
     })

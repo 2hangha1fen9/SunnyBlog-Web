@@ -6,7 +6,9 @@
         <el-tab-pane label="点赞消息">
             <LikeTab />
         </el-tab-pane>
-        <el-tab-pane label="关注消息"><FollowTab /></el-tab-pane>
+        <el-tab-pane label="关注消息">
+            <FollowTab />
+        </el-tab-pane>
     </el-tabs>
 </template>
 

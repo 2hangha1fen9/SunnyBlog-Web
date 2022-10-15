@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import { User,ForgetPassword } from '@/interface/user/user'
+import { User, ForgetPassword } from '@/interface/user/user'
 
 //根据Id获取用户
 export function getUser(uid: number) {
@@ -20,8 +20,8 @@ export function getLoginInfo() {
     })
 }
 
-//获取当前登陆者的信息
-export function updateUserInfo(user:User){
+//更新用户的信息
+export function updateUserInfo(user: User) {
     return request({
         url: '/user-service/user/updateInfo',
         method: 'put',
@@ -30,7 +30,7 @@ export function updateUserInfo(user:User){
 }
 
 //修改密码
-export function forgetPassword(forget: ForgetPassword){
+export function forgetPassword(forget: ForgetPassword) {
     return request({
         url: '/user-service/user/forgetPassword',
         method: 'post',

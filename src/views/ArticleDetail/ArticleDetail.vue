@@ -10,7 +10,7 @@
             </div>
             <div class="aside-container">
                 <UserInfo :user="user" />
-                <TagView :article="state" v-if="state?.tags?.length" />
+                <TagCard :tags="state?.tags" title="标签" @jumpTag="jumpTag" v-if="state?.tags?.length" />
                 <Catalogue />
             </div>
         </div>
@@ -25,7 +25,7 @@ import { ElMessage } from "element-plus"
 import Cover from "./components/Cover.vue"
 import Content from "./components/Content.vue"
 import UserInfo from "./components/UserInfo.vue"
-import TagView from "./components/Tags.vue"
+import TagCard from "@/components/TagCard.vue"
 import Catalogue from "./components/Catalogue.vue"
 import Comment from "./components/Comment/Comment.vue"
 import { User } from "@/interface/user/user"
@@ -84,6 +84,17 @@ function getUserInfo(uid: number) {
             user.value = data.result
         }
     })
+}
+
+//跳转标签
+function jumpTag(tagName: string) {
+    let url = router.resolve({
+        path: "/article",
+        query: {
+            tag: tagName,
+        },
+    })
+    window.open(url.href, "_blank")
 }
 </script>
 
@@ -229,7 +240,7 @@ function getUserInfo(uid: number) {
 }
 
 /* 标签视图 */
-.tag-container {
+.tag-card {
     margin-top: 20px;
     width: 100%;
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.14);

@@ -39,6 +39,19 @@ export function getCommentList(uid: number, pageIndex?: number | 1, pageSize?: n
     })
 }
 
+//获取给用户的评论
+export function getToMyCommentList(pageIndex?: number | 1, pageSize?: number | 10, condition?: Array<SearchCondidtion>) {
+    return request({
+        url: "/comment-service/comment/my",
+        method: "get",
+        params: {
+            pageIndex: pageIndex,
+            pageSize: pageSize,
+            condition: JSON.stringify(condition)
+        }
+    })
+}
+
 //删除已读评论
 export function readComment(cid: number, isAll = false) {
     return request({
@@ -54,6 +67,17 @@ export function readComment(cid: number, isAll = false) {
 export function authorDeleteComment(cid: number) {
     return request({
         url: "/comment-service/comment/authorDelete",
+        method: "delete",
+        params: {
+            cid: cid
+        }
+    })
+}
+
+//评论者删除评论
+export function deleteComment(cid: number) {
+    return request({
+        url: "/comment-service/comment/delete",
         method: "delete",
         params: {
             cid: cid
@@ -81,4 +105,3 @@ export function publishComment(comment: Comment) {
         data: comment
     })
 }
-

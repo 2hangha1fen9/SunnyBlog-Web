@@ -1,9 +1,11 @@
 <template>
     <div class="shadow-box">
         <div class="order-bar">
-            <el-link @click="router.push({ query: null })" :type="defaultActive">最新</el-link>
-            <el-divider direction="vertical" />
-            <el-link @click="router.push({ query: { hot: true } })" :type="hotActive">热门</el-link>
+            <div>
+                <el-link @click="router.push({ query: null })" :type="defaultActive">最新</el-link>
+                <el-divider direction="vertical" />
+                <el-link @click="router.push({ query: { hot: true } })" :type="hotActive">热门</el-link>
+            </div>
         </div>
         <ArticleList :items="state" :loading="loading" />
     </div>
@@ -118,7 +120,7 @@ const moreArticle = debounce(function () {
         state.pageIndex++
         getArticleLit()
     }
-}, 200)
+}, 100)
 
 //监视滚动条,滚动到底部加载数据
 const watchScroll = debounce(function () {
@@ -133,7 +135,7 @@ const watchScroll = debounce(function () {
         //到了这个就可以进行业务逻辑加载后台数据了
         moreArticle()
     }
-}, 500)
+}, 100)
 
 onMounted(() => {
     window.addEventListener("scroll", watchScroll)

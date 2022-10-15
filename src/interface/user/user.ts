@@ -9,6 +9,8 @@ export interface User {
     sex?: number
     fans?: number
     follows?: number
+    message?: string
+    registerTime?: string
 }
 
 //用户详情
@@ -17,6 +19,7 @@ export interface UserDetail extends User {
     birthday?: string
     registerTime?: string
     score?: string
+    message?: string
     status?: number
 }
 

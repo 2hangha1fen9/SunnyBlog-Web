@@ -14,6 +14,22 @@
             margin: 0;
             padding: 0 auto;
         }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        #app {
+            /* 我们希望 header 采用固定的高度，只占用必须的空间 */
+            /* 0 flex-grow, 0 flex-shrink, auto flex-basis */
+            flex: 2 0 auto;
+        }
     </style>
 </head>
 

@@ -1,10 +1,10 @@
 <template>
-    <li class="follow-item">
-        <div class="follow-avatar">
-            <Avatar class="user-avatar-box" :photo="photo" :showUsername="false" />
+    <li class="user-item">
+        <div class="user-avatar">
+            <Avatar :photo="photo" :showUsername="false" />
             <div>
-                <el-link :href="`/user/${state?.userId}`" target="_blank">{{ state?.nick || state?.username }}</el-link>
-                <p class="user-remark">{{ state?.remark }}</p>
+                <el-link :href="`/user/${user?.userId}`" target="_blank">{{ user?.nick || user?.username }}</el-link>
+                <p class="user-remark">{{ user?.remark }}</p>
             </div>
         </div>
         <el-button size="small" :type="isWatch ? 'success' : 'primary'" @click="watchUserInfo" :loading="loading">{{ isWatch ? "取消关注" : "关注" }}</el-button>
@@ -16,19 +16,19 @@ import Avatar from "@/components/Avatar.vue"
 import { computed, ref, watch } from "vue"
 import { useStore } from "vuex"
 import { Watch } from "@/interface/user/watch"
+import { User } from "@/interface/user/user"
 import { Response } from "@/interface/common/response"
 import { watchUser, watchStatus } from "@/api/user/watch"
 import { ElMessage } from "element-plus"
 
 const store = useStore()
 const props = defineProps<{
-    watch: Watch
+    user: User | Watch
 }>()
-const state = ref<Watch>(props?.watch)
 
 const photo = computed(() => {
-    if (state.value) {
-        return `${process.env.VUE_APP_BASE_API}/user-service${state.value?.photo}`
+    if (props) {
+        return `${process.env.VUE_APP_BASE_API}/user-service${props.user.photo}`
     }
 })
 const isWatch = ref(false)
@@ -38,7 +38,7 @@ const loading = ref(false)
 //关注用户
 function watchUserInfo() {
     loading.value = true
-    watchUser(state.value?.userId)
+    watchUser(props.user?.userId)
         .then((data: Response<string>) => {
             if (data.status === 200) {
                 ElMessage.success(data.result)
@@ -54,8 +54,8 @@ function watchUserInfo() {
 
 //关注状态
 function status() {
-    if (isLogin && state.value?.userId) {
-        watchStatus(state.value?.userId).then((data: Response<boolean>) => {
+    if (isLogin) {
+        watchStatus(props.user?.userId).then((data: Response<boolean>) => {
             if (data.status === 200) {
                 isWatch.value = data.result
             }
@@ -69,5 +69,3 @@ watch(props, (newVal) => {
     status()
 })
 </script>
-
-<style scoped></style>

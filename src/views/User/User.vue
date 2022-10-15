@@ -1,6 +1,7 @@
 <template>
-    <Cover :user="user" :meta="meta" />
+    <ImgCover v-show="user.cover" :user="user" :meta="meta" />
     <div class="user-container">
+        <NormalCover v-show="!user.cover" :user="user" :meta="meta" />
         <div class="user-tab">
             <el-menu class="menu" mode="horizontal" router :ellipsis="true" :default-active="defaultActive">
                 <el-menu-item :index="`/user/${uid}/article`" style="background: none">
@@ -27,7 +28,7 @@
                         <span>收藏</span>
                     </template>
                 </el-menu-item>
-                <el-menu-item :index="`/user/${uid}/comment`" style="background: none">
+                <el-menu-item v-if="uid == userId" :index="`/user/${uid}/comment`" style="background: none">
                     <template #title>
                         <el-icon>
                             <svg-icon icon-class="comment" />
@@ -55,27 +56,35 @@
             <router-view></router-view>
         </div>
         <div class="user-aside">
-            <el-card> asdfasdf </el-card>
+            <Board :user="user" />
+            <Tags :uid="uid" />
         </div>
     </div>
+    <el-backtop :right="50" :bottom="50" />
 </template>
 
 <script setup lang="ts">
 import { User } from "@/interface/user/user"
 import { UserMeta } from "@/interface/comment/summary"
 import { Response } from "@/interface/common/response"
-import { ref, watch } from "vue"
+import { reactive, ref, watch } from "vue"
+import { useStore } from "vuex"
 import { useRouter, useRoute } from "vue-router"
 import { getUser } from "@/api/user/user"
 import { getUserMeta } from "@/api/comment/meta"
-import Cover from "./components/Cover.vue"
+import NormalCover from "./Cover/NormalCover.vue"
+import ImgCover from "./Cover/ImgCover.vue"
 import { ElMessage } from "element-plus"
+import Tags from "./AsideTabs/Tags.vue"
+import Board from "./AsideTabs/Board.vue"
 
+const store = useStore()
 const router = useRouter()
 const route = useRoute()
 const props = defineProps<{
     uid: string
 }>()
+const userId = store.getters["identity/userId"]
 const user = ref<User>({})
 const meta = ref<UserMeta>({})
 const defaultActive = ref<string>()
@@ -122,7 +131,7 @@ if (props.uid) {
 }
 
 /* 用户信息展示 */
-.user-info {
+.user-img-info {
     height: 100%;
     width: 1140px;
     max-width: 100%;
@@ -132,49 +141,83 @@ if (props.uid) {
     padding: 10px;
     box-sizing: border-box;
 }
-
-/* 用户头像 */
-.user-avatar {
+.user-img-avatar {
     flex-direction: row;
 }
-.user-avatar .el-avatar {
+.user-img-avatar .el-avatar {
     height: 70px;
     width: 70px;
 }
-
-/* 性别图标 */
-.user-sex .svg-icon {
-    width: 20px;
-    height: 20px;
-}
-/* 昵称 */
-.user-nick {
+.user-img-nick {
     font-size: 1.3em;
     color: white;
     font-weight: bolder;
     margin-left: 10px;
+    width: 100%;
 }
-/* 备注 */
-.user-remark {
-    font-size: 10px;
+.user-img-nick p {
+    text-shadow: 3px 0px 7px rgb(0 0 0 / 12%) !important;
+}
+.user-img-remark {
+    font-size: 15px;
     overflow: hidden;
     text-overflow: ellipsis;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
     max-width: 400px;
 }
-/* 用户数据标签 */
-.user-meta {
+.user-img-meta {
     width: 100%;
     display: flex;
     justify-content: flex-end;
 }
-
 .meta-item {
     cursor: pointer;
     margin: 5px;
     border: none;
     box-shadow: 3px 0px 7px rgb(0 0 0 / 12%);
+}
+
+.user-sex .svg-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* 普通封面 */
+.user-normal-cover {
+    display: flex;
+    max-width: 100%;
+    width: 820px;
+    height: 200px;
+    top: 0;
+    padding: 20px;
+    margin: 20px 0px 20px;
+    box-sizing: border-box;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.02), 0px 5px 20px rgba(0, 0, 0, 9%);
+}
+.user-normal-info {
+    position: relative;
+    width: 100%;
+}
+.user-normal-avatar {
+    margin-right: 25px;
+}
+.user-normal-avatar .el-avatar {
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.03), 0px 5px 20px rgba(0, 0, 0, 11%);
+    height: 100px;
+    width: 100px;
+}
+.user-normal-info p {
+    text-shadow: 3px 0px 7px rgb(0 0 0 / 12%);
+    font-weight: bolder;
+    display: flex;
+    justify-content: space-between;
+    color: #ffff;
+}
+.user-normal-meta {
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 /* 菜单 */
@@ -203,6 +246,7 @@ if (props.uid) {
 }
 
 .user-tab {
+    box-shadow: 0px 0px 10px rgb(0 0 0 / 2%), 0px 5px 20px rgb(0 0 0 / 9%);
     width: 820px;
 }
 
@@ -212,5 +256,120 @@ if (props.uid) {
     top: 0;
     right: 0;
     width: 300px;
+}
+
+/* 文章排序过滤 */
+.order-bar {
+    margin: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.article-search {
+    width: 400px;
+}
+
+/* 用户关注/粉丝 */
+.follow-search {
+    width: 400px;
+    margin-top: 10px;
+}
+
+/* 评论页 */
+.comment-list {
+    margin-top: 10px;
+    padding-inline-start: 0px;
+    margin-bottom: 200px;
+}
+.comment-item {
+    border-bottom: 0.5px solid lightgray;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    box-sizing: border-box;
+}
+
+.comment-search {
+    width: 400px;
+    height: 24px;
+}
+.el-select .el-input {
+    height: 24px;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.order-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* 关注/粉丝页 */
+.user-item {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 15px;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 0.5px solid lightgray;
+    padding: 10px 10px;
+}
+
+/* 关注/粉丝用户头像 */
+.follow-search {
+    margin-left: 10px;
+}
+.follow-list .user-avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.follow-list .user-avatar .el-avatar {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+}
+
+/* 小黑板 */
+#board .vditor-toolbar {
+    display: none;
+}
+#board .vditor-content .vditor-reset {
+    padding: 10px !important;
+}
+#board ::-webkit-scrollbar {
+    display: none;
+}
+.board-card {
+    box-shadow: 0px 0px 10px rgb(0 0 0 / 2%), 0px 5px 20px rgb(0 0 0 / 9%);
+    margin-top: 20px;
+    min-height: 200px;
+    max-height: 400px;
+    padding: 0px;
+}
+.board-preview {
+    box-shadow: 0px 0px 10px rgb(0 0 0 / 2%), 0px 5px 20px rgb(0 0 0 / 9%);
+    padding: 10px;
+    background: #ffff;
+}
+.board-card::-webkit-scrollbar {
+    display: none;
+}
+
+/* 标签卡片 */
+.tag-card {
+    margin-top: 20px;
+    box-shadow: 0px 0px 10px rgb(0 0 0 / 2%), 0px 5px 20px rgb(0 0 0 / 9%);
+}
+.tag-item {
+    cursor: pointer;
+    margin: 5px;
+    border: none;
+    box-shadow: 3px 0px 7px rgb(0 0 0 / 12%);
 }
 </style>

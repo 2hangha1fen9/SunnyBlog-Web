@@ -2,7 +2,7 @@
     <header :class="{ 'header-container': true, 'header-up': !visible }" id="header">
         <div class="left-container">
             <svg-icon icon-class="sunny" id="logo" @click="router.push('/')" />
-            <h3 @click="router.push('/')" style="cursor: pointer">SunnyBlog</h3>
+            <h3 @click="router.push('/index')" style="cursor: pointer">SunnyBlog</h3>
             <el-menu class="links" mode="horizontal" router :ellipsis="true">
                 <!-- <el-menu-item index="/index" style="background: none">首页</el-menu-item>
                 <el-menu-item index="/rank" style="background: none">排行榜</el-menu-item>
@@ -12,7 +12,10 @@
         <div class="right-container">
             <SearchBar />
             <!-- 创作中心 -->
-            <el-button type="primary" @click="jumpCreation">创作中心</el-button>
+            <el-button type="primary" @click="jumpCreation">
+                <svg-icon icon-class="creation" />
+                创作中心
+            </el-button>
             <!-- 头像 -->
             <svg-icon v-if="isValid" class="notify-btn" icon-class="notify" @click="router.push('/notification')">消息</svg-icon>
             <p class="avatar-container" v-if="isValid">
@@ -22,7 +25,7 @@
                     </template>
                     <template #default>
                         <el-menu class="dropdown-menu" active-text-color="#303133">
-                            <el-menu-item index="0"><a :href="`/user/${userId}`" target="blank" style="text-decoration: none; height: 100%; width: 100%; color: black">个人主页</a></el-menu-item>
+                            <el-menu-item index="0"><a :href="`/user/${userId}`" style="text-decoration: none; height: 100%; width: 100%; color: black">个人主页</a></el-menu-item>
                             <el-menu-item index="1" @click="toggleState">{{ isValid ? "登出" : "登录" }}</el-menu-item>
                         </el-menu>
                     </template>
@@ -79,9 +82,10 @@ function watchScroll() {
     }
 }
 
+//跳转创作中心
 function jumpCreation() {
     let url = router.resolve({
-        path: `/creation/`,
+        path: `/creation`,
     })
     window.open(url.href, "_blank")
 }

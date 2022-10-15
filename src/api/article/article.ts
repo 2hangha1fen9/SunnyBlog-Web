@@ -42,7 +42,7 @@ export function listUserArticle(uid: number, pageIndex?: number | 1, pageSize?: 
     })
 }
 
-//列出用户文章列表
+//列出用户喜欢文章列表
 export function listUserLikeArticle(uid: number, isLike = true, pageIndex?: number | 1, pageSize?: number | 10, condition?: Array<SearchCondidtion>) {
     return request({
         url: '/article-service/article/userLike',

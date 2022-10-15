@@ -9,9 +9,16 @@ export function listPublicTag() {
     })
 }
 //获取用户个人标签
-export function listMyTag(uid: number) {
+export function listMyTag() {
     return request({
         url: '/article-service/tag/my',
+        method: 'get',
+    })
+}
+//获取用户的标签
+export function listUserTag(uid: number) {
+    return request({
+        url: '/article-service/tag/userTag',
         method: 'get',
         params: {
             uid: uid

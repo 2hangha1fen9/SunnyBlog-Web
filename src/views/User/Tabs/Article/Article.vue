@@ -1,9 +1,18 @@
 <template>
+    <div class="order-bar">
+        <div>
+            <el-link @click="router.push({ query: null })" :type="defaultActive">最新</el-link>
+            <el-divider direction="vertical" />
+            <el-link @click="router.push({ query: { hot: true } })" :type="hotActive">热门</el-link>
+        </div>
+        <el-input class="article-search" placeholder="搜索文章" size="small" v-model="searchKeyword" @keyup.enter="search" clearable></el-input>
+    </div>
     <ArticleList :items="state" :loading="loading" :isIndependent="true" />
 </template>
 
 <script setup lang="ts">
 import { debounce } from "lodash" //引入防抖节流
+import { useRoute, useRouter } from "vue-router"
 import { computed, onMounted, onBeforeUnmount, reactive, ref, watch } from "vue"
 import ArticleList from "@/components/ArticleList/ArticleList.vue"
 import { ElMessage } from "element-plus"
@@ -15,6 +24,8 @@ import { Article, Meta } from "@/interface/article/article"
 import { SearchCondidtion } from "@/interface/common/search-condition"
 import { Response, PageBean } from "@/interface/common/response"
 
+const route = useRoute()
+const router = useRouter()
 const props = defineProps<{
     uid: string
     isLikeOrCollection: string //是否为用户点赞/收藏的文章 1点赞n收藏
@@ -23,8 +34,62 @@ const loading = ref(false)
 const state = reactive<PageBean<Array<Article>>>({
     page: [],
     pageIndex: 1,
-}) //表格数据
+})
+//搜索关键字
+const searchKeyword = ref("")
+const condidtion = ref<Array<SearchCondidtion>>([])
+const hotActive = computed(() => {
+    return route.query["hot"] == "true" ? "primary" : "default"
+})
+const defaultActive = computed(() => {
+    return route.query["hot"] == "true" ? "default" : "primary"
+})
 
+//监视路由query参数
+watch(
+    route,
+    () => {
+        getCondition()
+        getArticleLit(true)
+    },
+    {
+        immediate: true,
+    }
+)
+
+//获取搜索条件
+function getCondition() {
+    //获取tag参数
+    let tag = route.query["tag"]
+    //按点赞量排序
+    let hot = route.query["hot"] === "true"
+    let cons: Array<SearchCondidtion> = []
+    if (tag || hot) {
+        if (tag) {
+            cons.push({
+                key: "tag",
+                value: decodeURIComponent(tag),
+            })
+        }
+        if (hot) {
+            cons.push({
+                key: "hot",
+                sort: -1,
+            })
+        }
+        condidtion.value = cons
+        state.pageIndex = 1
+    } else {
+        condidtion.value = []
+    }
+}
+
+function search() {
+    getCondition()
+    getArticleLit(true)
+}
+
+//获取数据
 function getArticleLit(needFlush = false) {
     loading.value = true
     let tempData = null
@@ -34,6 +99,7 @@ function getArticleLit(needFlush = false) {
             if (data.status !== 200) {
                 ElMessage.warning("数据拉取失败")
             }
+            //判断是否要从头刷新，还是追加
             if (state.pageIndex !== 1 && !needFlush) {
                 state.page.push(...data.result.page)
             } else {
@@ -60,10 +126,18 @@ function getArticleLit(needFlush = false) {
 
 //获取数据类型点赞/收藏
 function getData(needFlush = false) {
+    //合并搜索条件
+    let con = [
+        {
+            key: "title",
+            value: searchKeyword.value,
+        },
+        ...condidtion.value,
+    ]
     if (props.isLikeOrCollection) {
-        return listUserLikeArticle(props.uid, props.isLikeOrCollection == 1, needFlush ? 1 : state.pageIndex, 10, null)
+        return listUserLikeArticle(props.uid, props.isLikeOrCollection == 1, needFlush ? 1 : state.pageIndex, 10, con)
     } else {
-        return listUserArticle(props.uid, needFlush ? 1 : state.pageIndex, 10, null)
+        return listUserArticle(props.uid, needFlush ? 1 : state.pageIndex, 10, con)
     }
 }
 
@@ -73,7 +147,7 @@ const moreArticle = debounce(function () {
         state.pageIndex++
         getArticleLit()
     }
-}, 200)
+}, 100)
 
 //监视滚动条,滚动到底部加载数据
 const watchScroll = debounce(function () {
@@ -88,7 +162,7 @@ const watchScroll = debounce(function () {
         //到了这个就可以进行业务逻辑加载后台数据了
         moreArticle()
     }
-}, 500)
+}, 100)
 
 onMounted(() => {
     window.addEventListener("scroll", watchScroll)
@@ -97,5 +171,3 @@ onBeforeUnmount(() => {
     window.removeEventListener("scroll", watchScroll)
 })
 </script>
-
-<style></style>
