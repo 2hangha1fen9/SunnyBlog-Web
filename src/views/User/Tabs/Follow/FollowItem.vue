@@ -19,6 +19,8 @@ import { Watch } from "@/interface/user/watch"
 import { Response } from "@/interface/common/response"
 import { watchUser, watchStatus } from "@/api/user/watch"
 import { ElMessage } from "element-plus"
+import { getImgUrl } from "@/utils/converter"
+
 
 const store = useStore()
 const props = defineProps<{
@@ -28,7 +30,7 @@ const state = ref<Watch>(props?.watch)
 
 const photo = computed(() => {
     if (state.value) {
-        return `${process.env.VUE_APP_BASE_API}/user-service${state.value?.photo}`
+        return getImgUrl("user-service",state.value?.photo)
     }
 })
 const isWatch = ref(false)

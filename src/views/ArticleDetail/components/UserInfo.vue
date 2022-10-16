@@ -18,6 +18,7 @@ import { User } from "@/interface/user/user"
 import { Response } from "@/interface/common/response"
 import { watchUser, watchStatus } from "@/api/user/watch"
 import { ElMessage } from "element-plus"
+import { getImgUrl } from "@/utils/converter"
 
 const router = useRouter()
 const store = useStore()
@@ -28,7 +29,7 @@ const state = ref<User>(props?.user)
 
 const photo = computed(() => {
     if (state.value) {
-        return `${process.env.VUE_APP_BASE_API}/user-service${state.value?.photo}`
+        return getImgUrl("user-service",state.value?.photo)
     }
 })
 const isWatch = ref(false)

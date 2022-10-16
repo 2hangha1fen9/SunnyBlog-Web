@@ -69,6 +69,8 @@ import { Response } from "@/interface/common/response"
 // api
 import { uploadPicture } from "@/api/article/drawing-bed"
 import { updateArticle, getArticle } from "@/api/article/article"
+import { getImgUrl } from "@/utils/converter"
+
 
 const router = useRouter()
 const route = useRoute()
@@ -153,7 +155,7 @@ function initEditor() {
                 formData.append("data", files[0])
                 uploadPicture(formData).then((data: Response<string>) => {
                     if (data.status === 200) {
-                        let imgUrl = `${process.env.VUE_APP_BASE_API}/article-service${data.result.path}`
+                        let imgUrl = getImgUrl("article-service",data.result.path,false)
                         let linkUrl = `![${"img"}](${imgUrl})`
                         vditor.value?.insertValue(linkUrl)
                     } else {

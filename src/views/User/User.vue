@@ -1,7 +1,11 @@
 <template>
-    <ImgCover v-show="user.cover" :user="user" :meta="meta" />
+    <div v-show="user.cover">
+        <ImgCover :user="user" :meta="meta" />
+    </div>
     <div class="user-container">
-        <NormalCover v-show="!user.cover" :user="user" :meta="meta" />
+        <div v-show="!user.cover">
+            <NormalCover :user="user" :meta="meta" />
+        </div>
         <div class="user-tab">
             <el-menu class="menu" mode="horizontal" router :ellipsis="true" :default-active="defaultActive">
                 <el-menu-item :index="`/user/${uid}/article`" style="background: none">
@@ -65,16 +69,16 @@
 
 <script setup lang="ts">
 import { User } from "@/interface/user/user"
-import { UserMeta } from "@/interface/comment/summary"
+import { Summary } from "@/interface/comment/summary"
 import { Response } from "@/interface/common/response"
 import { reactive, ref, watch } from "vue"
 import { useStore } from "vuex"
 import { useRouter, useRoute } from "vue-router"
 import { getUser } from "@/api/user/user"
 import { getUserMeta } from "@/api/comment/meta"
+import { ElMessage } from "element-plus"
 import NormalCover from "./Cover/NormalCover.vue"
 import ImgCover from "./Cover/ImgCover.vue"
-import { ElMessage } from "element-plus"
 import Tags from "./AsideTabs/Tags.vue"
 import Board from "./AsideTabs/Board.vue"
 
@@ -86,7 +90,7 @@ const props = defineProps<{
 }>()
 const userId = store.getters["identity/userId"]
 const user = ref<User>({})
-const meta = ref<UserMeta>({})
+const meta = ref<Summary>({})
 const defaultActive = ref<string>()
 watch(
     route,
@@ -106,7 +110,7 @@ if (props.uid) {
             ElMessage.warning(data.message)
         }
     })
-    getUserMeta(props.uid).then((data: Response<UserMeta>) => {
+    getUserMeta(props.uid).then((data: Response<Summary>) => {
         if (data.status === 200) {
             meta.value = data.result
         } else {
@@ -114,7 +118,17 @@ if (props.uid) {
         }
     })
 
-    router.push(`/user/${props.uid}/article`)
+    //默认跳转
+    let tabName = route.path.replace(`/user/${props.uid}`, "")
+    if (tabName) {
+        if ("/comment" === tabName && props.uid != userId) {
+            router.push(`/user/${props.uid}/article`)
+        } else {
+            router.push(`/user/${props.uid}${tabName}`)
+        }
+    } else {
+        router.push(`/user/${props.uid}/article`)
+    }
 }
 </script>
 
@@ -248,6 +262,7 @@ if (props.uid) {
 .user-tab {
     box-shadow: 0px 0px 10px rgb(0 0 0 / 2%), 0px 5px 20px rgb(0 0 0 / 9%);
     width: 820px;
+    min-height: 600px;
 }
 
 /* 右侧容器 */
@@ -279,7 +294,6 @@ if (props.uid) {
 .comment-list {
     margin-top: 10px;
     padding-inline-start: 0px;
-    margin-bottom: 200px;
 }
 .comment-item {
     border-bottom: 0.5px solid lightgray;

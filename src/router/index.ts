@@ -29,6 +29,18 @@ const routes: Array<RouteRecordRaw> = [
         ]
     },
     {
+        path: '/usersetting',
+        name: 'usersetting',
+        redirect: '/usersetting',
+        component: Layout,
+        children: [
+            {
+                path: '/usersetting',
+                component: () => import('@/views/UserSetting/UserSetting.vue')
+            }
+        ]
+    },
+    {
         path: '/article',
         name: 'article',
         redirect: '/index',

@@ -1,17 +1,30 @@
 <template>
     <div class="notify-container">
-        <NotifyMenu />
+        <el-tabs>
+            <el-tab-pane label="评论消息">
+                <CommentTab />
+            </el-tab-pane>
+            <el-tab-pane label="点赞消息">
+                <LikeTab />
+            </el-tab-pane>
+            <el-tab-pane label="关注消息">
+                <FollowTab />
+            </el-tab-pane>
+        </el-tabs>
     </div>
 </template>
 
 <script setup lang="ts">
-import NotifyMenu from "./components/NotifyMenu.vue"
+import CommentTab from "./components/CommentTab/CommentTab.vue"
+import LikeTab from "./components/LikeTab/LikeTab.vue"
+import FollowTab from "./components/FollowTab/FollowTab.vue"
 </script>
 
 <style scoped>
 .notify-container {
     width: 700px;
     max-width: 100%;
+    min-height: 500px;
     padding: 20px;
     margin: 20px auto auto;
     box-shadow: 0px 0px 13.1px rgba(0, 0, 0, 0.024), 0px 0px 44px rgba(0, 0, 0, 0.036), 0px 0px 197px rgba(0, 0, 0, 0.06);

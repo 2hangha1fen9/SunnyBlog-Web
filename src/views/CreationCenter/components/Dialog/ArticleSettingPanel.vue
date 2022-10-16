@@ -89,13 +89,15 @@ import { Article } from "@/interface/article/article"
 import { Region } from "@/interface/article/region"
 import { Category } from "@/interface/article/category"
 import { Tag } from "@/interface/article/tag"
-import { Response } from "@/interface/common/response"
+import { Response,UploadResult } from "@/interface/common/response"
 // api
 import { updateArticle, publishArticle } from "@/api/article/article"
 import { uploadPicture } from "@/api/article/drawing-bed"
 import { listRegion } from "@/api/article/region"
 import { listCategory } from "@/api/article/category"
 import { listMyTag } from "@/api/article/tag"
+import { getImgUrl } from "@/utils/converter"
+
 
 const router = useRouter()
 const props = defineProps<{
@@ -123,7 +125,7 @@ const photoUrl = computed(() => {
     if (photoData.value.get("data")) {
         return article.value.photo
     } else {
-        return `${process.env.VUE_APP_BASE_API}/article-service${article.value.photo}`
+        return getImgUrl("article-service",article.value.photo)
     }
 })
 //表单验证规则
@@ -154,12 +156,12 @@ function saveArticle(form: FormInstance) {
     if (photoData.value.get("data")) {
         if (props.isEdit) {
             uploadPicture(photoData.value, article.value.id, article.value.userId)
-                .then((data: Response<string>) => {
+                .then((data: Response<UploadResult>) => {
                     if (data.status !== 200) {
                         ElMessage.warning("图片上传失败")
                         return false
                     }
-                    article.value.photo = data.result.path
+                    article.value.photo = getImgUrl("article-service",data.result.path) 
                 })
                 .then(() => {
                     save(form)
@@ -167,12 +169,12 @@ function saveArticle(form: FormInstance) {
         } else {
             //添加模式匿名上传封面
             uploadPicture(photoData.value)
-                .then((data: Response<string>) => {
+                .then((data: Response<UploadResult>) => {
                     if (data.status !== 200) {
                         ElMessage.warning("图片上传失败")
                         return false
                     }
-                    article.value.photo = data.result.path
+                    article.value.photo = getImgUrl("article-service",data.result.path) 
                 })
                 .then(() => {
                     save(form)

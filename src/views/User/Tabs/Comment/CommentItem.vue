@@ -21,6 +21,8 @@ import Vditor from "vditor"
 import Avatar from "@/components/Avatar.vue"
 import { Response } from "@/interface/common/response"
 import { Comment } from "@/interface/comment/comment"
+import { getImgUrl } from "@/utils/converter"
+
 
 const props = defineProps<{
     comment: Comment
@@ -29,7 +31,7 @@ const props = defineProps<{
 
 const photo = computed(() => {
     if (props?.comment.photo) {
-        return `${process.env.VUE_APP_BASE_API}/user-service${props?.comment.photo}`
+        return getImgUrl("user-service",props?.comment.photo)
     }
     return null
 })

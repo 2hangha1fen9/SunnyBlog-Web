@@ -16,6 +16,8 @@ import { format } from "timeago.js"
 import { Response } from "@/interface/common/response"
 import { Watch } from "@/interface/user/watch"
 import { watchMessageDelete } from "@/api/user/watch"
+import { getImgUrl } from "@/utils/converter"
+
 
 const props = defineProps<{
     watch: Watch
@@ -25,7 +27,7 @@ const emits = defineEmits<{
 }>()
 const photo = computed(() => {
     if (props?.watch.photo) {
-        return `${process.env.VUE_APP_BASE_API}/user-service${props?.watch.photo}`
+        return getImgUrl("user-service",props?.watch.photo)
     }
     return null
 })

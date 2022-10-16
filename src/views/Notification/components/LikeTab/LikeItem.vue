@@ -17,6 +17,8 @@ import { format } from "timeago.js"
 import { Response } from "@/interface/common/response"
 import { Like } from "@/interface/comment/like"
 import { deleteLikeMessage } from "@/api/comment/like"
+import { getImgUrl } from "@/utils/converter"
+
 
 const props = defineProps<{
     like: Like
@@ -26,7 +28,7 @@ const emits = defineEmits<{
 }>()
 const photo = computed(() => {
     if (props?.like.photo) {
-        return `${process.env.VUE_APP_BASE_API}/user-service${props?.like.photo}`
+        return getImgUrl("user-service",props?.like.photo)
     }
     return null
 })

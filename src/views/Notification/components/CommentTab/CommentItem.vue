@@ -12,6 +12,8 @@ import { Response } from "@/interface/common/response"
 import { Comment } from "@/interface/comment/comment"
 import { readComment, authorDeleteComment, allowComment } from "@/api/comment/comment"
 import Comment from "@/components/CommentListItem.vue"
+import { getImgUrl } from "@/utils/converter"
+
 
 const props = defineProps<{
     comment: Comment
@@ -22,7 +24,7 @@ const emits = defineEmits<{
 }>()
 const photo = computed(() => {
     if (props?.comment.photo) {
-        return `${process.env.VUE_APP_BASE_API}/user-service${props?.comment.photo}`
+        return getImgUrl("user-service",props?.comment.photo)
     }
     return null
 })

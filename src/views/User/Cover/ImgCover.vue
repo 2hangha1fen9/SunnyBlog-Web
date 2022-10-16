@@ -32,6 +32,7 @@ import { User } from "@/interface/user/user"
 import { UserMeta } from "@/interface/comment/summary"
 import { watchUser, watchStatus } from "@/api/user/watch"
 import { dateFormatter } from "@/utils/converter"
+import { getImgUrl } from "@/utils/converter"
 
 
 const store = useStore()
@@ -42,12 +43,12 @@ const props = defineProps<{
 
 const cover = computed(() => {
     if (props.user) {
-        return `${process.env.VUE_APP_BASE_API}/user-service${props.user.cover}`
+        return getImgUrl("user-service",props.user.cover)
     }
 })
 const photo = computed(() => {
     if (props.user) {
-        return `${process.env.VUE_APP_BASE_API}/user-service${props.user.photo}`
+        return getImgUrl("user-service",props.user.photo)
     }
 })
 const isWatch = ref(false)

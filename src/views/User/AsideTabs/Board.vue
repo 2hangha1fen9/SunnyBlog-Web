@@ -13,6 +13,8 @@ import { Response } from "@/interface/common/response"
 import { uploadPicture } from "@/api/article/drawing-bed"
 import { updateUserInfo } from "@/api/user/user"
 import { ElMessage } from "element-plus"
+import { getImgUrl } from "@/utils/converter"
+
 
 const store = useStore()
 const userId = store.getters["identity/userId"]
@@ -50,7 +52,7 @@ onMounted(() => {
                     formData.append("data", files[0])
                     uploadPicture(formData).then((data: Response<string>) => {
                         if (data.status === 200) {
-                            let imgUrl = `${process.env.VUE_APP_BASE_API}/article-service${data.result.path}`
+                            let imgUrl = getImgUrl("article-service",data.result.path,false)
                             let linkUrl = `![${"img"}](${imgUrl})`
                             vditor.value?.insertValue(linkUrl)
                         } else {

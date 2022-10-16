@@ -29,6 +29,8 @@ import { Response } from "@/interface/common/response"
 import { Comment } from "@/interface/comment/comment"
 import { uploadPicture } from "@/api/comment/drawing-bed"
 import { publishComment } from "@/api/comment/comment"
+import { getImgUrl } from "@/utils/converter"
+
 
 const store = useStore()
 const instance = getCurrentInstance()
@@ -118,7 +120,7 @@ onMounted(() => {
                 uploadPicture(formData).then((data: Response<string>) => {
                     if (data.status === 200) {
                         debugger
-                        let imgUrl = `${process.env.VUE_APP_BASE_API}/comment-service${data.result.path}`
+                        let imgUrl = getImgUrl("comment-service",data.result.path,false)
                         let linkUrl = `![${"img"}](${imgUrl})`
                         vditor.value?.insertValue(linkUrl)
                     } else {

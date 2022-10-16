@@ -26,7 +26,8 @@
                     <template #default>
                         <el-menu class="dropdown-menu" active-text-color="#303133">
                             <el-menu-item index="0"><a :href="`/user/${userId}`" style="text-decoration: none; height: 100%; width: 100%; color: black">个人主页</a></el-menu-item>
-                            <el-menu-item index="1" @click="toggleState">{{ isValid ? "登出" : "登录" }}</el-menu-item>
+                            <el-menu-item index="1" @click="router.push('/usersetting')">用户设置</el-menu-item>
+                            <el-menu-item index="2" @click="toggleState">{{ isValid ? "登出" : "登录" }}</el-menu-item>
                         </el-menu>
                     </template>
                 </el-popover>

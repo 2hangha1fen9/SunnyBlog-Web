@@ -28,6 +28,8 @@
 import { useRouter } from "vue-router"
 import { watch, ref, getCurrentInstance } from "vue"
 import { Article } from "@/interface/article/article"
+import { getImgUrl } from "@/utils/converter"
+
 const props = defineProps<{
     article: Article
 }>()
@@ -41,7 +43,7 @@ watch(
     (newVal) => {
         state.value = newVal.article
         if (state?.value?.photo) {
-            articlePhoto.value = `${process.env.VUE_APP_BASE_API}/article-service${state?.value?.photo}`
+            articlePhoto.value = getImgUrl("article-service", state?.value?.photo)
         }
         return null
     },

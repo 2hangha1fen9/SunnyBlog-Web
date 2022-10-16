@@ -127,6 +127,8 @@ import { listMyArticle, deleteArticle } from "@/api/article/article"
 import { Article, ArticleId } from "@/interface/article/article"
 import { Response, PageBean } from "@/interface/common/response"
 import { SearchCondidtion } from "@/interface/common/search-condition"
+import { getImgUrl } from "@/utils/converter"
+
 
 const emits = defineEmits<{
     (event: "closeDialog"): void
@@ -261,7 +263,7 @@ function initRowData(article: Article) {
     rowRef.title = article.title
     rowRef.userId = article.userId
     rowRef.summary = article.summary
-    rowRef.photo = `${process.env.VUE_APP_BASE_API}/article-service${article.photo}`
+    rowRef.photo = getImgUrl("article-service",article.photo)
     rowRef.regionId = article.regionId
     rowRef.regionName = article.regionName
     let tagIds = []

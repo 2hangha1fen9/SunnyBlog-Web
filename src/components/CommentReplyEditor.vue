@@ -21,6 +21,8 @@ import Avatar from "@/components/Avatar.vue"
 import { Response } from "@/interface/common/response"
 import { Comment } from "@/interface/comment/comment"
 import { publishComment } from "@/api/comment/comment"
+import { getImgUrl } from "@/utils/converter"
+
 
 const commentRef = ref()
 const btnLoading = ref(false)
@@ -40,7 +42,7 @@ const state = reactive<Comment>({
 //获取照片真实路径
 const photo = computed(() => {
     if (props?.comment.photo) {
-        return `${process.env.VUE_APP_BASE_API}/user-service${props?.comment.photo}`
+        return getImgUrl("user-service",props?.comment.photo)
     }
     return null
 })
@@ -100,7 +102,7 @@ onMounted(() => {
                 uploadPicture(formData).then((data: Response<string>) => {
                     if (data.status === 200) {
                         debugger
-                        let imgUrl = `${process.env.VUE_APP_BASE_API}/comment-service${data.result.path}`
+                        let imgUrl = getImgUrl("comment-service",data.result.path,false)
                         let linkUrl = `![${"img"}](${imgUrl})`
                         vditor.value?.insertValue(linkUrl)
                     } else {

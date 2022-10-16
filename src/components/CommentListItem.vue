@@ -35,6 +35,7 @@ import Avatar from "@/components/Avatar.vue"
 import { Response } from "@/interface/common/response"
 import { Comment } from "@/interface/comment/comment"
 import { readComment, authorDeleteComment, allowComment } from "@/api/comment/comment"
+import { getImgUrl } from "@/utils/converter"
 
 const instance = getCurrentInstance()
 const props = defineProps<{
@@ -65,7 +66,7 @@ for (let eventName in instance?.vnode.props) {
 
 const photo = computed(() => {
     if (props?.comment.photo) {
-        return `${process.env.VUE_APP_BASE_API}/user-service${props?.comment.photo}`
+        return  getImgUrl("user-service",props?.comment.photo)
     }
     return null
 })
