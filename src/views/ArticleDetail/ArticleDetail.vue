@@ -102,6 +102,7 @@ function jumpTag(tagName: string) {
 .detail-container {
     width: 1140px;
     max-width: 100%;
+
     margin: 0 auto;
     position: relative;
     margin-bottom: 50px;
@@ -111,6 +112,7 @@ function jumpTag(tagName: string) {
 #content {
     width: 820px;
     max-width: 100%;
+    min-height: 600px;
     padding: 20px;
     background-color: white;
     box-sizing: border-box;

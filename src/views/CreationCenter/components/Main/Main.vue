@@ -18,10 +18,11 @@
                     <template #default>
                         <el-menu class="dropdown-menu" active-text-color="#303133">
                             <el-menu-item index="0"><a href="/" target="blank" style="text-decoration: none; height: 100%; width: 100%; color: black">首页</a></el-menu-item>
-                            <el-menu-item index="0"><a :href="`/user/${userId}`" target="blank" style="text-decoration: none; height: 100%; width: 100%; color: black">个人主页</a></el-menu-item>
-                            <el-menu-item index="2" @click="artDialogVisible = true">文章管理</el-menu-item>
-                            <el-menu-item index="2" @click="tagDialogVisible = true">标签管理</el-menu-item>
-                            <el-menu-item index="2" @click="restoreDialogVisible = true">回收站</el-menu-item>
+                            <el-menu-item index="1"><a :href="`/user/${userId}`" target="_blank" style="text-decoration: none; height: 100%; width: 100%; color: black">个人主页</a></el-menu-item>
+                            <el-menu-item index="2"><a :href="`/setting`" target="_blank" style="text-decoration: none; height: 100%; width: 100%; color: black">用户设置</a></el-menu-item>
+                            <el-menu-item index="3" @click="artDialogVisible = true">文章管理</el-menu-item>
+                            <el-menu-item index="4" @click="tagDialogVisible = true">标签管理</el-menu-item>
+                            <el-menu-item index="5" @click="restoreDialogVisible = true">回收站</el-menu-item>
                         </el-menu>
                     </template>
                 </el-popover>
@@ -70,7 +71,6 @@ import { Response } from "@/interface/common/response"
 import { uploadPicture } from "@/api/article/drawing-bed"
 import { updateArticle, getArticle } from "@/api/article/article"
 import { getImgUrl } from "@/utils/converter"
-
 
 const router = useRouter()
 const route = useRoute()
@@ -155,7 +155,7 @@ function initEditor() {
                 formData.append("data", files[0])
                 uploadPicture(formData).then((data: Response<string>) => {
                     if (data.status === 200) {
-                        let imgUrl = getImgUrl("article-service",data.result.path,false)
+                        let imgUrl = getImgUrl("article-service", data.result.path, false)
                         let linkUrl = `![${"img"}](${imgUrl})`
                         vditor.value?.insertValue(linkUrl)
                     } else {
@@ -339,5 +339,9 @@ onUnmounted(() => {
 
 .dropdown-menu {
     border: none;
+}
+.el-menu-item {
+    height: 40px;
+    line-height: 40px;
 }
 </style>

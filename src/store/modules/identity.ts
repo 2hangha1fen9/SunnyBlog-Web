@@ -44,8 +44,8 @@ const getters = {
     },
     username(state: Jwt) {
         if (getters.isValid(state)) {
-            const { user_name, user_nick } = jwtDecode<JwtPayload>(getters.token(state))
-            return user_nick || user_name
+            const { user_name } = jwtDecode<JwtPayload>(getters.token(state))
+            return user_name
         }
     },
     nick(state: Jwt) {

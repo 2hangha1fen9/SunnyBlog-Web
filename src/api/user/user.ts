@@ -37,3 +37,11 @@ export function forgetPassword(forget: ForgetPassword) {
         data: forget
     })
 }
+
+//重置用户封面
+export function resetCover(){
+    return request({
+        url: "/user-service/user/resetCover",
+        method: 'put'
+    })
+}

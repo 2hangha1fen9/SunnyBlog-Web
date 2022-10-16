@@ -1,5 +1,5 @@
 <template>
-    <TagCard :tags="tags" title="标签云" :round="true" @jumpTag="jumpTag" />
+    <TagCard :tags="tags" title="标签" :round="true" @jumpTag="jumpTag" />
 </template>
 
 <script setup lang="ts">

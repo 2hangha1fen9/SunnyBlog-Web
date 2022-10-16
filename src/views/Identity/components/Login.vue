@@ -1,6 +1,10 @@
 <template>
     <section class="login-form">
-        <router-link to="/identity/register" :replace="true" class="register-btn">注册</router-link>
+        <p class="switch-btn">
+            <router-link to="/identity/forget" :replace="true" class="forget-btn">修改密码</router-link>
+            <router-link to="/identity/register" :replace="true" class="register-btn">注册</router-link>
+        </p>
+
         <el-form :model="loginData" :rules="rules" size="large" ref="loginForm" status-icon @keyup.enter="handleLogin(loginForm)">
             <el-form-item>
                 <h3 style="width: 100%">
@@ -38,7 +42,6 @@
 import { useStore } from "vuex"
 import { reactive, ref, watch } from "vue"
 import { useRouter, useRoute } from "vue-router"
-import { start, close } from "@/utils/progress"
 import { FormRules, FormInstance, ElMessage } from "element-plus"
 //api
 import { login } from "@/api/identity/login" //登录api
@@ -181,7 +184,6 @@ async function handleLogin(form: FormInstance) {
     if (!form) return
     await form.validate((valid, fields) => {
         if (valid) {
-            start()
             loading.value = true
             //调用登录api
             login(loginData)
@@ -193,17 +195,13 @@ async function handleLogin(form: FormInstance) {
                     } else {
                         router.push({ path: redirect.value || "/" })
                     }
-
-                    close()
                     loading.value = false
                 })
                 .catch((error) => {
                     ElMessage.warning(`鉴权失败`)
                     loading.value = false
-                    close()
                 })
         } else {
-            close()
             return false
         }
     })
@@ -213,14 +211,15 @@ async function handleSend(form: FormInstance) {
     //发送验证码
     await form.validateField("username", (valid) => {
         if (valid) {
-            start()
             sendButton.handle()
             //调用发送验证码api
             sendVerificationCode(vcData).then((data) => {
-                console.log(data)
+                if (data.status === 200) {
+                    ElMessage.success("发送成功")
+                } else {
+                    ElMessage.warning(data.message)
+                }
             })
-
-            close()
         }
     })
 }
@@ -239,19 +238,25 @@ async function handleSend(form: FormInstance) {
     overflow: hidden;
     position: relative;
 }
-.register-btn {
-    font-size: 0.3em;
-    color: white;
-    background-color: rgba(255, 255, 255, 0.074);
-    padding: 5px 15px 5px 15px;
-    backdrop-filter: blur(20px);
-    border-bottom-left-radius: 10px;
-    text-decoration: none;
+.switch-btn {
     position: absolute;
     top: 0;
     right: 0;
 }
+.forget-btn,
+.register-btn {
+    font-size: 0.3em;
+    color: white;
+    background-color: rgba(255, 255, 255, 0.256);
+    padding: 5px 15px 5px 15px;
+    backdrop-filter: blur(20px);
+    text-decoration: none;
+}
+.forget-btn {
+    border-bottom-left-radius: 10px;
+}
+.forget-btn:hover,
 .register-btn:hover {
-    background-color: rgba(255, 255, 255, 0.25);
+    background-color: rgba(255, 255, 255, 0.566);
 }
 </style>

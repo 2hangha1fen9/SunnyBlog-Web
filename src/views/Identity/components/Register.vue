@@ -42,7 +42,6 @@
 <script setup lang="ts">
 import { reactive, ref, watch } from "vue"
 import { useRouter } from "vue-router"
-import { start, close } from "@/utils/progress"
 import { FormRules, FormInstance, ElMessage } from "element-plus"
 //api
 import { register } from "@/api/user/register" //登录api
@@ -51,6 +50,7 @@ import { sendVerificationCode } from "@/api/identity/vcode" //验证码api
 import { Response } from "@/interface/common/response"
 import { RegisterPayload } from "@/interface/user/register"
 import { SendVCode } from "@/interface/identity/vcode"
+import { da } from "element-plus/es/locale"
 
 const router = useRouter()
 
@@ -197,7 +197,6 @@ async function handleRegister(form: FormInstance) {
     if (!form) return
     await form.validate((valid, fields) => {
         if (valid) {
-            start()
             loading.value = true
             //调用登录api
             register(registerData)
@@ -210,15 +209,12 @@ async function handleRegister(form: FormInstance) {
                         ElMessage.warning(data.result)
                     }
                     loading.value = false
-                    close()
                 })
                 .catch((error) => {
                     ElMessage.warning(`未知错误${error}`)
                     loading.value = false
-                    close()
                 })
         } else {
-            close()
             return false
         }
     })
@@ -228,14 +224,15 @@ async function handleSend(form: FormInstance) {
     //发送验证码
     await form.validateField("receiver", (valid) => {
         if (valid) {
-            start()
             sendButton.handle()
             //调用发送验证码api
-            sendVerificationCode(vcData).then((data) => {
-                console.log(data)
+            sendVerificationCode(vcData).then((data: Response<string>) => {
+                if (data.status === 200) {
+                    ElMessage.success("发送成功")
+                } else {
+                    ElMessage.warning(data.message)
+                }
             })
-
-            close()
         }
     })
 }

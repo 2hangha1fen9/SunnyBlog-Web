@@ -1,16 +1,29 @@
 <template>
     <div class="usersetting-container">
         <el-tabs tabPosition="left" style="height: 100%">
-            <el-tab-pane label="个人资料">
+            <el-tab-pane>
+                <template #label>
+                    <span class="custom-tabs-label">
+                        <h3 style="display: inline">个人资料</h3>
+                    </span>
+                </template>
                 <UserEditor />
             </el-tab-pane>
-            <el-tab-pane label="账号设置">账号设置</el-tab-pane>
+            <el-tab-pane>
+                <template #label>
+                    <span class="custom-tabs-label">
+                        <h3 style="display: inline">账号设置</h3>
+                    </span>
+                </template>
+                <UserBind />
+            </el-tab-pane>
         </el-tabs>
     </div>
 </template>
 
 <script setup lang="ts">
 import UserEditor from "./components/UserEditor/UserEditor.vue"
+import UserBind from "./components/UserBind/UserBind.vue"
 </script>
 
 <style scoped>

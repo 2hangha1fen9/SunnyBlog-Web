@@ -16,6 +16,7 @@ export interface User {
 //用户详情
 export interface UserDetail extends User {
     email?: string
+    phone?: string
     birthday?: string
     registerTime?: string
     score?: string

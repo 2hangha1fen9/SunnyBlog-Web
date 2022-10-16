@@ -2,22 +2,31 @@
     <div class="user-editor">
         <el-form :rules="rules" ref="formRef" :model="user" label-width="80px">
             <div class="img-area">
+                <el-form-item label="封面" prop="cover" style="height: 200px">
+                    <el-upload class="cover-uploader" :show-file-list="false" :auto-upload="false" :on-change="previewCover" name="data">
+                        <el-avatar shape="square" :src="user.cover" fit="fill" style="height: 100%; width: 100%" @error="user.cover = null">
+                            <el-skeleton-item variant="image" style="width: 300px; height: 100%" />
+                        </el-avatar>
+                    </el-upload>
+                </el-form-item>
                 <el-form-item label="头像" prop="photo" style="height: 100px">
-                    <el-upload class="avatar-uploader" :show-file-list="false" :auto-upload="false" :limit="1" :on-change="previewPhoto" name="data">
+                    <el-upload class="avatar-uploader" :show-file-list="false" :auto-upload="false" :on-change="previewPhoto" name="data">
                         <el-avatar :size="100" :src="user.photo" />
                     </el-upload>
                 </el-form-item>
-                <el-form-item label="主页封面" prop="cover" style="height: 200px">
-                    <el-upload class="cover-uploader" :show-file-list="false" :auto-upload="false" :limit="1" :on-change="previewCover" name="data">
-                        <el-image :src="user.cover" fit="fill" style="height: 100%" />
-                    </el-upload>
-                </el-form-item>
             </div>
+            <el-form-item>
+                <el-popconfirm v-if="user.cover" title="您确定要删除封面吗?" @confirm="resetCoverImg">
+                    <template #reference>
+                        <el-link>删除封面</el-link>
+                    </template>
+                </el-popconfirm>
+            </el-form-item>
             <el-form-item label="登录名" required prop="username">
                 <el-input v-model="user.username" :disabled="true"></el-input>
             </el-form-item>
             <el-form-item label="昵称" prop="nick">
-                <el-input v-model="user.nick" />
+                <el-input v-model="user.nick" clearable />
             </el-form-item>
             <el-form-item label="性别" prop="sex">
                 <el-radio-group v-model="user.sex">
@@ -29,7 +38,7 @@
                 <el-date-picker v-model="user.birthday" value-format="YYYY-MM-DDTHH:mm:ss" format="YYYY-MM-DD" type="date" />
             </el-form-item>
             <el-form-item label="个人说明" prop="remark">
-                <el-input v-model="user.remark" autosize type="textarea" />
+                <el-input v-model="user.remark" type="textarea" resize="none" :rows="4" />
             </el-form-item>
         </el-form>
         <div class="submit">
@@ -44,7 +53,7 @@ import { ElMessage, UploadFile } from "element-plus"
 import type { FormRules, FormInstance } from "element-plus"
 import { getImgUrl } from "@/utils/converter"
 //api
-import { updateUserInfo, getLoginInfo } from "@/api/user/user"
+import { updateUserInfo, getLoginInfo, resetCover } from "@/api/user/user"
 import { uploadImage } from "@/api/user/avatar"
 //接口
 import { UserDetail } from "@/interface/user/user"
@@ -90,6 +99,7 @@ function previewPhoto(file: UploadFile) {
         ElMessage.warning("文件大小不能超过2M")
         return false
     }
+    photoData.value = new FormData()
     photoData.value.append("data", file.raw)
     user.value.photo = URL.createObjectURL(file.raw)
 }
@@ -99,6 +109,7 @@ function previewCover(file: UploadFile) {
         ElMessage.warning("图片格式错误：只能为：png、jpeg、gif、bmp、ico")
         return false
     }
+    coverData.value = new FormData()
     coverData.value.append("data", file.raw)
     user.value.cover = URL.createObjectURL(file.raw)
 }
@@ -136,6 +147,15 @@ function saveUserInfo(form: FormInstance) {
     } else {
         save(form)
     }
+}
+
+function resetCoverImg() {
+    resetCover().then((data: Response<string>) => {
+        if (data.status !== 200) {
+            ElMessage.warning(data.message)
+        }
+        user.value.cover = null
+    })
 }
 
 //保存用户信息
@@ -185,7 +205,8 @@ getLoginInfo().then((data: Response<UserDetail>) => {
 
 .img-area {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
+    height: 200px;
 }
 
 .submit {

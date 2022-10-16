@@ -1,7 +1,7 @@
 <template>
     <el-form :rules="rules" ref="formRef" :model="article" label-width="80px">
         <el-form-item label="封面" prop="photo">
-            <el-upload class="avatar-uploader" :show-file-list="false" :auto-upload="false" :limit="1" :on-change="previewPhoto" name="data">
+            <el-upload class="avatar-uploader" :show-file-list="false" :auto-upload="false" :on-change="previewPhoto" name="data">
                 <el-image style="min-width: 200px; height: 150px; max-width: 100%; max-height: 100%; display: block" fit="scale-down" ref="photoRef" :src="photoUrl">
                     <template #placeholder>
                         <el-skeleton-item variant="image" style="width: 100%; height: 100%" />
@@ -89,7 +89,7 @@ import { Article } from "@/interface/article/article"
 import { Region } from "@/interface/article/region"
 import { Category } from "@/interface/article/category"
 import { Tag } from "@/interface/article/tag"
-import { Response,UploadResult } from "@/interface/common/response"
+import { Response, UploadResult } from "@/interface/common/response"
 // api
 import { updateArticle, publishArticle } from "@/api/article/article"
 import { uploadPicture } from "@/api/article/drawing-bed"
@@ -97,7 +97,6 @@ import { listRegion } from "@/api/article/region"
 import { listCategory } from "@/api/article/category"
 import { listMyTag } from "@/api/article/tag"
 import { getImgUrl } from "@/utils/converter"
-
 
 const router = useRouter()
 const props = defineProps<{
@@ -125,7 +124,7 @@ const photoUrl = computed(() => {
     if (photoData.value.get("data")) {
         return article.value.photo
     } else {
-        return getImgUrl("article-service",article.value.photo)
+        return getImgUrl("article-service", article.value.photo)
     }
 })
 //表单验证规则
@@ -146,6 +145,7 @@ function previewPhoto(file: UploadFile) {
         ElMessage.warning("图片格式错误：只能为：png、jpeg、gif、bmp、ico")
         return false
     }
+    photoData.value = new FormData()
     photoData.value.append("data", file.raw)
     article.value.photo = URL.createObjectURL(file.raw)
 }
@@ -161,7 +161,7 @@ function saveArticle(form: FormInstance) {
                         ElMessage.warning("图片上传失败")
                         return false
                     }
-                    article.value.photo = getImgUrl("article-service",data.result.path) 
+                    article.value.photo = getImgUrl("article-service", data.result.path)
                 })
                 .then(() => {
                     save(form)
@@ -174,7 +174,7 @@ function saveArticle(form: FormInstance) {
                         ElMessage.warning("图片上传失败")
                         return false
                     }
-                    article.value.photo = getImgUrl("article-service",data.result.path) 
+                    article.value.photo = getImgUrl("article-service", data.result.path)
                 })
                 .then(() => {
                     save(form)

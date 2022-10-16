@@ -29,13 +29,13 @@ const routes: Array<RouteRecordRaw> = [
         ]
     },
     {
-        path: '/usersetting',
-        name: 'usersetting',
-        redirect: '/usersetting',
+        path: '/setting',
+        name: 'setting',
+        redirect: '/setting',
         component: Layout,
         children: [
             {
-                path: '/usersetting',
+                path: '/setting',
                 component: () => import('@/views/UserSetting/UserSetting.vue')
             }
         ]
@@ -115,6 +115,10 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: '/identity/register',
                 component: () => import("@/views/Identity/components/Register.vue")
+            },
+            {
+                path: '/identity/forget',
+                component: () => import("@/views/Identity/components/ForgetPassword.vue")
             }
         ]
     },
