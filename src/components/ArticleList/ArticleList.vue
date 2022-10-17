@@ -30,7 +30,6 @@
             </template>
         </el-skeleton>
         <el-empty v-if="items.totalCount <= 0">
-            <el-link type="primary" href="/index">返回</el-link>
         </el-empty>
     </div>
 </template>

@@ -3,7 +3,7 @@
         <div class="user-avatar">
             <Avatar :photo="photo" :showUsername="false" />
             <div>
-                <el-link :href="`/user/${user?.userId}`" target="_blank">{{ user?.nick || user?.username }}</el-link>
+                <el-link :href="`/user/${user?.userId || user?.id}`" target="_blank">{{ `${user.username}/${user.nick}` }}</el-link>
                 <p class="user-remark">{{ user?.remark }}</p>
             </div>
         </div>

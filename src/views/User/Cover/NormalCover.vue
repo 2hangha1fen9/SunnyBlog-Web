@@ -10,7 +10,7 @@
                 <el-button class="user-normal-follow-btn" v-if="user.id != userId" round :type="isWatch ? 'success' : 'primary'" @click="watchUserInfo" :loading="loading">{{ isWatch ? "取消关注" : "关注" }}</el-button>
             </p>
             <p class="user-normal-remark">{{ user.remark }}</p>
-            <p>加入于：{{dateFormatter(user.registerTime)}}</p>
+            <p>加入于：{{user.registerTime && dateFormatter(user.registerTime)}}</p>
             <div class="user-normal-meta">
                 <el-tag class="meta-item" effect="dark" round color="pink"> 粉丝 {{ user.fans }} </el-tag>
                 <el-tag class="meta-item" effect="dark" round color="#f89898"> 浏览 {{ meta.likeCount }} </el-tag>

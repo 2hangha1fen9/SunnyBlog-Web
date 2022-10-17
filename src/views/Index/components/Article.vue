@@ -2,9 +2,14 @@
     <div class="shadow-box">
         <div class="order-bar">
             <div>
-                <el-link @click="router.push({ query: null })" :type="defaultActive">最新</el-link>
+                <el-link @click="getNew" :type="defaultActive">最新</el-link>
                 <el-divider direction="vertical" />
-                <el-link @click="router.push({ query: { hot: true } })" :type="hotActive">热门</el-link>
+                <el-link @click="getHot" :type="hotActive">热门</el-link>
+            </div>
+            <div>
+                <el-tag v-if="route.query['tag']" @close="closeTag" type="info" class="tag-item" style="margin-right: 5px" closable>
+                    {{ route.query["tag"] }}
+                </el-tag>
             </div>
         </div>
         <ArticleList :items="state" :loading="loading" />
@@ -84,7 +89,17 @@ watch(
         immediate: true,
     }
 )
+function getNew() {
+    router.push({ query: { ...route.query, hot: null } })
+}
+function getHot() {
+    router.push({ query: { ...route.query, hot: true } })
+}
+function closeTag() {
+    router.push({ query: { ...route.query, tag: null } })
+}
 
+//获取数据
 function getArticleLit(needFlush = false) {
     loading.value = true
     listArticle(needFlush ? 1 : state.pageIndex, 10, condidtion)
@@ -149,12 +164,14 @@ onBeforeUnmount(() => {
 .order-bar {
     border-bottom: 1px solid rgba(211, 211, 211, 0.626);
     padding: 5px 0px 5px 10px;
+    display: flex;
+    justify-content: space-between;
 }
 
 .shadow-box {
-    width: 700px;
+    width: 820px;
     max-width: 100%;
-    margin: 20px auto auto;
+    margin-top: 20px;
     box-shadow: 0px 0px 13.1px rgba(0, 0, 0, 0.024), 0px 0px 44px rgba(0, 0, 0, 0.036), 0px 0px 197px rgba(0, 0, 0, 0.06);
 }
 </style>

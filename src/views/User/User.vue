@@ -322,7 +322,7 @@ if (props.uid) {
 }
 
 /* 关注/粉丝页 */
-.user-item {
+.follow-list .user-item {
     display: flex;
     flex-direction: row;
     margin-bottom: 15px;
@@ -376,11 +376,11 @@ if (props.uid) {
 }
 
 /* 标签卡片 */
-.tag-card {
+.user-aside .tag-card {
     margin-top: 20px;
     box-shadow: 0px 0px 10px rgb(0 0 0 / 2%), 0px 5px 20px rgb(0 0 0 / 9%);
 }
-.tag-item {
+.user-aside .tag-item {
     cursor: pointer;
     margin: 5px;
     border: none;

@@ -59,6 +59,36 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/CreationCenter/CreationCenter.vue"),
     },
     {
+        path: '/search',
+        name: 'search',
+        component: Layout,
+        children: [
+            {
+                path: '/search',
+                component: () => import('@/views/Search/Search.vue'),
+                props: true,
+                name: 'search',
+                children: [
+                    {
+                        path: 'article/:keyword',
+                        props: true,
+                        component: () => import('@/views/Search/ArticleResult/ArticleResult.vue'),
+                    },
+                    {
+                        path: 'tag/:keyword',
+                        props: true,
+                        component: () => import('@/views/Search/TagResult/TagResult.vue'),
+                    },
+                    {
+                        path: 'user/:keyword',
+                        props: true,
+                        component: () => import('@/views/Search/UserResult/UserResult.vue'),
+                    }
+                ]
+            }
+        ]
+    },
+    {
         path: '/user',
         name: 'user',
         component: Layout,

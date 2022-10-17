@@ -13,7 +13,7 @@ import { computed, onMounted, onBeforeUnmount, reactive, ref, watch } from "vue"
 import { debounce } from "lodash" //引入防抖节流
 import UserItem from "@/components/UserItem.vue"
 import { Watch } from "@/interface/user/watch"
-import { Response } from "@/interface/common/response"
+import { Response,PageBean } from "@/interface/common/response"
 import { watchList } from "@/api/user/watch"
 import { ElMessage } from "element-plus"
 

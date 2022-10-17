@@ -160,6 +160,7 @@ onMounted(() => {
     padding: 5px;
     color: gray;
     cursor: pointer;
+    white-space: nowrap;
 }
 .notify-btn:hover {
     color: skyblue;

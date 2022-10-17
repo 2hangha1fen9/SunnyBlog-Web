@@ -1,11 +1,15 @@
 import request from '@/utils/request'
 import { Tag, TagId } from '@/interface/article/tag'
+import { SearchCondidtion } from '@/interface/common/search-condition'
 
 //获取公共标签
-export function listPublicTag() {
+export function listPublicTag(condition?: Array<SearchCondidtion>) {
     return request({
         url: '/article-service/tag/public',
-        method: 'get'
+        method: 'get',
+        params: {
+            condition: condition && JSON.stringify(condition)
+        }
     })
 }
 //获取用户个人标签

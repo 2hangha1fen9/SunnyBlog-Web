@@ -1,15 +1,9 @@
 <template>
     <div class="order-bar">
         <div>
-            <el-link @click="getNew" :type="defaultActive">最新</el-link>
+            <el-link @click="router.push({ query: null })" :type="defaultActive">最新</el-link>
             <el-divider direction="vertical" />
-            <el-link @click="getHot" :type="hotActive">热门</el-link>
-        </div>
-        <el-input class="article-search" placeholder="搜索文章" size="small" v-model="searchKeyword" @keyup.enter="search" clearable></el-input>
-        <div>
-            <el-tag v-if="route.query['tag']" @close="closeTag" type="info" class="tag-item" style="margin-right: 5px" closable>
-                {{ route.query["tag"] }}
-            </el-tag>
+            <el-link @click="router.push({ query: { hot: true } })" :type="hotActive">热门</el-link>
         </div>
     </div>
     <ArticleList :items="state" :loading="loading" :isIndependent="true" />
@@ -22,7 +16,7 @@ import { computed, onMounted, onBeforeUnmount, reactive, ref, watch } from "vue"
 import ArticleList from "@/components/ArticleList/ArticleList.vue"
 import { ElMessage } from "element-plus"
 //api
-import { listUserArticle, listUserLikeArticle } from "@/api/article/article"
+import { listArticle } from "@/api/article/article"
 import { getArticleMetaList } from "@/api/comment/meta"
 //接口
 import { Article, Meta } from "@/interface/article/article"
@@ -32,16 +26,15 @@ import { Response, PageBean } from "@/interface/common/response"
 const route = useRoute()
 const router = useRouter()
 const props = defineProps<{
-    uid: string
-    isLikeOrCollection: string //是否为用户点赞/收藏的文章 1点赞n收藏
+    keyword: string
 }>()
+const keyword = ref(props.keyword)
 const loading = ref(false)
 const state = reactive<PageBean<Array<Article>>>({
     page: [],
     pageIndex: 1,
 })
 //搜索关键字
-const searchKeyword = ref("")
 const condidtion = ref<Array<SearchCondidtion>>([])
 const hotActive = computed(() => {
     return route.query["hot"] == "true" ? "primary" : "default"
@@ -51,64 +44,32 @@ const defaultActive = computed(() => {
 })
 
 //监视路由query参数
-watch(
-    route,
-    () => {
-        getCondition()
-        getArticleLit(true)
-    },
-    {
-        immediate: true,
-    }
-)
-function getNew() {
-    router.push({ query: { ...route.query, hot: null } })
-}
-function getHot() {
-    router.push({ query: { ...route.query, hot: true } })
-}
-function closeTag() {
-    router.push({ query: { ...route.query, tag: null } })
-}
-
-//获取搜索条件
-function getCondition() {
-    //获取tag参数
-    let tag = route.query["tag"]
-    //按点赞量排序
-    let hot = route.query["hot"] === "true"
-    let cons: Array<SearchCondidtion> = []
-    if (tag || hot) {
-        if (tag) {
-            cons.push({
-                key: "tag",
-                value: decodeURIComponent(tag),
-            })
-        }
-        if (hot) {
-            cons.push({
-                key: "hot",
-                sort: -1,
-            })
-        }
-        condidtion.value = cons
-        state.pageIndex = 1
-    } else {
-        condidtion.value = []
-    }
-}
-
-function search() {
-    getCondition()
+watch(route, (newVal) => {
+    keyword.value = newVal.params["keyword"]
     getArticleLit(true)
-}
+})
 
 //获取数据
 function getArticleLit(needFlush = false) {
     loading.value = true
-    let tempData = null
 
-    getData(needFlush)
+    let tempCon: SearchCondidtion = [
+        {
+            key: "article",
+            value: keyword.value,
+        },
+    ]
+
+    //判断是否按点赞量排序
+    let hot = route.query["hot"] === "true"
+    if (hot) {
+        tempCon.push({
+            key: "hot",
+            sort: -1,
+        })
+    }
+
+    listArticle(needFlush ? 1 : state.pageIndex, 10, tempCon)
         .then((data: Response<PageBean<Array<Article>>>) => {
             if (data.status !== 200) {
                 ElMessage.warning("数据拉取失败")
@@ -136,23 +97,6 @@ function getArticleLit(needFlush = false) {
                 })
             })
         })
-}
-
-//获取数据类型点赞/收藏
-function getData(needFlush = false) {
-    //合并搜索条件
-    let con = [
-        {
-            key: "article",
-            value: searchKeyword.value,
-        },
-        ...condidtion.value,
-    ]
-    if (props.isLikeOrCollection) {
-        return listUserLikeArticle(props.uid, props.isLikeOrCollection == 1, needFlush ? 1 : state.pageIndex, 10, con)
-    } else {
-        return listUserArticle(props.uid, needFlush ? 1 : state.pageIndex, 10, con)
-    }
 }
 
 getArticleLit(true)
@@ -185,3 +129,11 @@ onBeforeUnmount(() => {
     window.removeEventListener("scroll", watchScroll)
 })
 </script>
+
+<style scoped>
+.order-bar {
+    margin: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+</style>

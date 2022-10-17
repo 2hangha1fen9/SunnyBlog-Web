@@ -1,5 +1,18 @@
 import request from '@/utils/request'
 import { User, ForgetPassword } from '@/interface/user/user'
+import { SearchCondidtion } from '@/interface/common/search-condition'
+
+export function listUser(pageIndex?: number | 1, pageSize?: number | 10, condition?: Array<SearchCondidtion>) {
+    return request({
+        url: "/user-service/user/list",
+        method: "get",
+        params: {
+            pageIndex: pageIndex,
+            pageSize: pageSize,
+            condition: JSON.stringify(condition)
+        }
+    })
+}
 
 //根据Id获取用户
 export function getUser(uid: number) {
@@ -39,7 +52,7 @@ export function forgetPassword(forget: ForgetPassword) {
 }
 
 //重置用户封面
-export function resetCover(){
+export function resetCover() {
     return request({
         url: "/user-service/user/resetCover",
         method: 'put'
