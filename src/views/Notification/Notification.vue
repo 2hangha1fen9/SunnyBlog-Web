@@ -1,5 +1,5 @@
 <template>
-    <div class="notify-container">
+    <div class="notify-container reactive-main">
         <el-tabs>
             <el-tab-pane label="评论消息">
                 <CommentTab />
@@ -26,6 +26,7 @@ import FollowTab from "./components/FollowTab/FollowTab.vue"
     max-width: 100%;
     min-height: 500px;
     padding: 20px;
+    box-sizing: border-box;
     margin: 20px auto auto;
     box-shadow: 0px 0px 13.1px rgba(0, 0, 0, 0.024), 0px 0px 44px rgba(0, 0, 0, 0.036), 0px 0px 197px rgba(0, 0, 0, 0.06);
 }

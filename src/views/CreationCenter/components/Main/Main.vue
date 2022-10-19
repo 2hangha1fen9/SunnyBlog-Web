@@ -276,12 +276,24 @@ onMounted(() => {
             staticSaveArticle()
         }
     })
+    //响应式配置
+    addEventListener("resize", collspaseAdide)
 })
+
+collspaseAdide()
+function collspaseAdide() {
+    if (document.documentElement.clientWidth <= 1000) {
+        store.dispatch("sidebar/setStatus", true)
+    } else {
+        store.dispatch("sidebar/setStatus", false)
+    }
+}
 
 onUnmounted(() => {
     instance?.proxy?.$bus.all.delete("updateCategory")
     instance?.proxy?.$bus.all.delete("resetArticle")
     instance?.proxy?.$bus.all.delete("updateArticleName")
+    removeEventListener("resize", collspaseAdide)
     clearInterval(autoSaveTimer)
 })
 </script>

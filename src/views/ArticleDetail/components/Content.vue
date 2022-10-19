@@ -1,5 +1,5 @@
 <template>
-    <div id="content" ref="content"></div>
+    <div id="content" ref="content" class="reactive-main"></div>
 </template>
 
 <script setup lang="ts">
@@ -28,7 +28,7 @@ function renderArticle(data: Article) {
             hljs: {
                 lineNumber: true,
                 style: article.value.codeStyle,
-            }
+            },
         }).then(() => {
             instance?.proxy?.$bus.emit("renderCatalogue", content.value)
         })

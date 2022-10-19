@@ -10,7 +10,7 @@
             <el-link v-if="state.regionName" @click="jumpRegion(state.regionName)" style="color: white">{{ state.regionName }}</el-link>
         </div>
     </header>
-    <header v-else class="pure-cover">
+    <header v-else class="pure-cover reactive-main">
         <div class="cover-pure-meta" v-if="state">
             <h1 class="cover-title">{{ state?.title }}</h1>
             <p class="cover-meta">

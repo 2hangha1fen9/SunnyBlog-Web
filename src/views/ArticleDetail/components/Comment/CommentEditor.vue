@@ -1,6 +1,6 @@
 <template>
-    <div class="comment-editor">
-        <div id="vditor"></div>
+    <div class="comment-editor reactive-main">
+        <div id="vditor" class="reactive-main"></div>
         <div class="comment-bar">
             <div class="comment-toreply">
                 <Avatar v-if="reply" :photo="photo" :username="username" :showUsername="false"></Avatar>
@@ -30,7 +30,6 @@ import { Comment } from "@/interface/comment/comment"
 import { uploadPicture } from "@/api/comment/drawing-bed"
 import { publishComment } from "@/api/comment/comment"
 import { getImgUrl } from "@/utils/converter"
-
 
 const store = useStore()
 const instance = getCurrentInstance()
@@ -120,7 +119,7 @@ onMounted(() => {
                 uploadPicture(formData).then((data: Response<string>) => {
                     if (data.status === 200) {
                         debugger
-                        let imgUrl = getImgUrl("comment-service",data.result.path,false)
+                        let imgUrl = getImgUrl("comment-service", data.result.path, false)
                         let linkUrl = `![${"img"}](${imgUrl})`
                         vditor.value?.insertValue(linkUrl)
                     } else {

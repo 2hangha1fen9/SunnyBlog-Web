@@ -12,6 +12,7 @@
         "@types/timeago": "^1.6.0",
         "axios": "^0.27.2",
         "core-js": "^3.8.3",
+        "echarts": "^5.4.0",
         "element-plus": "^2.2.17",
         "jwt-decode": "^3.1.2",
         "mitt": "^3.0.0",

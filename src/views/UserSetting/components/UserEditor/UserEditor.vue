@@ -4,8 +4,8 @@
             <div class="img-area">
                 <el-form-item label="封面" prop="cover" style="height: 200px">
                     <el-upload class="cover-uploader" :show-file-list="false" :auto-upload="false" :on-change="previewCover" name="data">
-                        <el-avatar shape="square" :src="user.cover" fit="fill" style="height: 100%; width: 100%" @error="user.cover = null">
-                            <el-skeleton-item variant="image" style="width: 300px; height: 100%" />
+                        <el-avatar shape="square" :src="user.cover" fit="fill" style="height: 100%; width: 280px" @error="user.cover = null">
+                            <el-skeleton-item variant="image" style="width: 280px; height: 100%" />
                         </el-avatar>
                     </el-upload>
                 </el-form-item>

@@ -1,5 +1,5 @@
 <template>
-    <div ref="preview" class="board-preview"></div>
+    <div ref="preview"></div>
 </template>
 
 <script setup lang="ts">
@@ -24,9 +24,3 @@ getConfig("footer").then((data: Response<string>) => {
     }
 })
 </script>
-
-<style scoped>
-.board-card::-webkit-scrollbar {
-    display: none;
-}
-</style>

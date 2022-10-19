@@ -1,8 +1,8 @@
 <template>
-    <div class="comment-editor">
+    <div class="comment-editor reactive-main">
         <CommentEditor :aid="aid" />
     </div>
-    <el-card class="comment-card" id="comment">
+    <el-card class="comment-card reactive-main" id="comment">
         <template #header>
             <span>评论</span>
         </template>

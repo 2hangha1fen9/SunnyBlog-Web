@@ -1,5 +1,5 @@
 <template>
-    <el-menu @open="watchExpandPath" class="menu" mode="horizontal" router :ellipsis="true" :default-active="defaultActive">
+    <el-menu @open="watchExpandPath" class="menu" mode="horizontal" router :default-active="defaultActive">
         <el-menu-item index="/index" style="background: none" @click="router.replace('/index')">
             <template #title>
                 <span>综合</span>
@@ -89,6 +89,8 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .menu {
+    overflow-y: hidden;
+    overflow-x: scroll;
     position: sticky;
     border-bottom: none;
     background: none;
@@ -102,5 +104,9 @@ onBeforeUnmount(() => {
     backdrop-filter: saturate(50%) blur(4px);
     -webkit-backdrop-filter: saturate(50%) blur(4px);
     z-index: 10;
+}
+
+.menu::-webkit-scrollbar {
+    display: none;
 }
 </style>

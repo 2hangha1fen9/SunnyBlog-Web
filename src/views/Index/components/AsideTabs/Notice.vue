@@ -15,7 +15,7 @@ const preview = ref()
 getConfig("notice").then((data: Response<string>) => {
     if (data.status === 200) {
         nextTick(() => {
-            Vditor.preview(preview.value, data.result || "暂无公告", {
+            Vditor.preview(preview.value, data.result.trim() || "暂无公告", {
                 markdown: {
                     toc: true,
                 },

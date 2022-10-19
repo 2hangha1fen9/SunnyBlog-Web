@@ -78,7 +78,6 @@ function status() {
     }
 }
 
-status()
 watch(props, (newVal) => {
     props.user = newVal
     status()

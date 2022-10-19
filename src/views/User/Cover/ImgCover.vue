@@ -34,7 +34,6 @@ import { watchUser, watchStatus } from "@/api/user/watch"
 import { dateFormatter } from "@/utils/converter"
 import { getImgUrl } from "@/utils/converter"
 
-
 const store = useStore()
 const props = defineProps<{
     user: User
@@ -43,12 +42,12 @@ const props = defineProps<{
 
 const cover = computed(() => {
     if (props.user) {
-        return getImgUrl("user-service",props.user.cover)
+        return getImgUrl("user-service", props.user.cover)
     }
 })
 const photo = computed(() => {
     if (props.user) {
-        return getImgUrl("user-service",props.user.photo)
+        return getImgUrl("user-service", props.user.photo)
     }
 })
 const isWatch = ref(false)
@@ -84,7 +83,6 @@ function status() {
     }
 }
 
-status()
 watch(props, (newVal) => {
     props.user = newVal
     status()

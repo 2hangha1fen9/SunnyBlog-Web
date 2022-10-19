@@ -13,6 +13,7 @@ const catalogue = ref()
 const catalogueInitTop = ref(0)
 const instance = getCurrentInstance()
 const headingElements = ref([])
+const renderSuccess = ref(false) //防止获取目录位置信息被更改
 
 instance?.proxy?.$bus.on("renderCatalogue", renderCatalogue)
 //渲染目录
@@ -20,9 +21,17 @@ function renderCatalogue(data: HTMLElement) {
     nextTick(() => {
         Vditor.outlineRender(data, catalogue.value)
         if (catalogue.value.innerText.trim() !== "") {
-            catalogue.value.style.display = "block" //显示目录
+            //显示目录
+            catalogue.value.style.display = "block"
+            //获取目录初始位置
             catalogueInitTop.value = catalogue.value.getBoundingClientRect().top
+            //修正目录偏移量
+            if (document.documentElement.scrollTop) {
+                catalogueInitTop.value += document.documentElement.scrollTop + 80
+            }
             getToc(data) //获取所有h标签
+
+            renderSuccess.value = true
         }
     })
 }
@@ -37,7 +46,7 @@ function getToc(element: HTMLElement) {
 
 //监听滚动条固定目录
 const watchCatalogueScroll = () => {
-    if (window.scrollY > catalogueInitTop.value - 80) {
+    if (renderSuccess.value && window.scrollY > catalogueInitTop.value - 80) {
         isSticky.value = true
     } else {
         isSticky.value = false

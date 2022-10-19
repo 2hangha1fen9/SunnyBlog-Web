@@ -1,0 +1,125 @@
+
+
+// 侧边栏收起样式
+.show-aside {
+    display: block !important;
+}
+// 侧边栏显示按钮
+.float-menu {
+    position: fixed;
+    left: 50px;
+    bottom: 50px;
+    z-index: 9999;
+    color: #8a919f;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background-color: #ffffff;
+    box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.12);
+    font-size: 25px;
+}
+.article-btns .float-menu {
+    display: none;
+}
+.float-menu:hover {
+    color: skyblue;
+}
+
+@media screen and (max-width: 1140px) {
+    // 侧边栏通用响应式
+    .reactive-main {
+        width: 100% !important;
+    }
+    .reactive-aside {
+        display: none;
+        padding: 20px;
+        box-sizing: border-box;
+        height: 100%;
+        width: 100% !important;
+        z-index: 9999 !important;
+        overflow-y: scroll;
+        backdrop-filter: blur(10px);
+        position: fixed !important;
+        text-align: center;
+        padding-bottom: 100px;
+    }
+    .float-menu {
+        display: flex;
+    }
+
+    // 头部菜单
+    .right-container {
+        width: 100% !important;
+        justify-content: space-between !important;
+    }
+
+    // 分区菜单
+    .menu {
+        justify-content: flex-start !important;
+    }
+    // 文章详情
+    .main-container {
+        overflow: hidden !important;
+    }
+
+    .article-btns {
+        z-index: 9999 !important;
+        margin-left: -20px;
+        position: fixed;
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-evenly;
+        align-items: center;
+        width: 100%;
+        bottom: 0 !important;
+        background-color: #ffffff;
+        box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 7%);
+    }
+    .article-btns .float-menu {
+        display: block;
+        width: 30px;
+        height: 30px;
+    }
+    .btn-item {
+        padding: 5px !important;
+        box-shadow: none !important;
+    }
+
+    // 文章目录
+    .sticky-catalogue {
+        position: static !important;
+        width: 100% !important;
+        overflow: auto !important;
+        max-height: none !important;
+    }
+
+    // 用户主页
+    .user-img-info {
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+    }
+    .user-normal-cover {
+        width: 100% !important;
+    }
+    .user-img-nick {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .user-img-meta {
+        justify-content: center !important;
+        flex-wrap: wrap;
+    }
+
+    // 用户设置面板
+    .img-area {
+        flex-wrap: wrap;
+        height: 100% !important;
+    }
+}

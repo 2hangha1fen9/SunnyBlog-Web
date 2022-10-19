@@ -1,5 +1,5 @@
 <template>
-    <div class="comment-list">
+    <div class="comment-list ">
         <CommentItem v-for="item in comments" :key="`${item.id}`" :comment="item" />
     </div>
 </template>

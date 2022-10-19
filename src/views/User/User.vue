@@ -6,7 +6,7 @@
         <div v-show="!user.cover">
             <NormalCover :user="user" :meta="meta" />
         </div>
-        <div class="user-tab">
+        <div class="user-tab reactive-main">
             <el-menu class="menu" mode="horizontal" router :ellipsis="true" :default-active="defaultActive">
                 <el-menu-item :index="`/user/${uid}/article`" style="background: none">
                     <template #title>
@@ -59,11 +59,14 @@
             </el-menu>
             <router-view></router-view>
         </div>
-        <div class="user-aside">
+        <div :class="{ 'user-aside': true, 'reactive-aside': true, 'show-aside': show }">
             <Board :user="user" />
             <Tags :uid="uid" />
+            <ArticleCount v-if="uid == userId" />
+            <ArticleTrend :uid="uid" />
         </div>
     </div>
+    <svg-icon class="float-menu" icon-class="detail" @click="showAside" />
     <el-backtop :right="50" :bottom="50" />
 </template>
 
@@ -71,7 +74,7 @@
 import { User } from "@/interface/user/user"
 import { Summary } from "@/interface/comment/summary"
 import { Response } from "@/interface/common/response"
-import { reactive, ref, watch } from "vue"
+import { getCurrentInstance, nextTick, reactive, ref, watch } from "vue"
 import { useStore } from "vuex"
 import { useRouter, useRoute } from "vue-router"
 import { getUser } from "@/api/user/user"
@@ -81,7 +84,10 @@ import NormalCover from "./Cover/NormalCover.vue"
 import ImgCover from "./Cover/ImgCover.vue"
 import Tags from "./AsideTabs/Tags.vue"
 import Board from "./AsideTabs/Board.vue"
+import ArticleCount from "./AsideTabs/ArticleCount.vue"
+import ArticleTrend from "./AsideTabs/ArticleTrend.vue"
 
+const instance = getCurrentInstance()
 const store = useStore()
 const router = useRouter()
 const route = useRoute()
@@ -129,6 +135,16 @@ if (props.uid) {
     } else {
         router.push(`/user/${props.uid}/article`)
     }
+}
+
+//浮动按钮
+const show = ref(false)
+function showAside() {
+    show.value = !show.value
+    nextTick(() => {
+        //如果侧边栏为收起状态则需要手动设置图标自适应
+        instance?.proxy?.$bus.emit("resize")
+    })
 }
 </script>
 
@@ -385,5 +401,34 @@ if (props.uid) {
     margin: 5px;
     border: none;
     box-shadow: 3px 0px 7px rgb(0 0 0 / 12%);
+}
+
+/* 文章总览 */
+.count-tab {
+    margin-top: 20px;
+}
+.count-view {
+    padding-inline-start: 0px;
+    display: flex;
+    list-style-type: none;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.count-view li {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    white-space: nowrap !important;
+    padding: 15px;
+}
+.count-view li p {
+    font-size: 20px;
+}
+
+/* 文章发布趋势 */
+.trend-tab {
+    margin-top: 20px;
 }
 </style>

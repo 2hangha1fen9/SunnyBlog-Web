@@ -1,5 +1,5 @@
 <template>
-    <div class="shadow-box">
+    <div class="shadow-box reactive-main">
         <div class="order-bar">
             <div>
                 <el-link @click="getNew" :type="defaultActive">最新</el-link>

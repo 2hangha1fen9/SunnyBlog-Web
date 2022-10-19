@@ -3,18 +3,21 @@
         <!-- 有封面显示在最顶端 -->
         <Cover :article="state" v-if="state?.photo" />
         <div class="detail-container">
-            <div class="main-container">
+            <div class="main-container reactive-main">
                 <Cover :article="state" v-if="!state?.photo" />
                 <Content />
                 <Comment v-if="aid && state" :aid="aid" />
             </div>
-            <div class="aside-container">
+            <div :class="{ 'aside-container': true, 'reactive-aside': true, 'show-aside': show }">
                 <UserInfo :user="user" />
                 <TagCard :tags="state?.tags" title="标签" @jumpTag="jumpTag" v-if="state?.tags?.length" />
                 <Catalogue />
             </div>
         </div>
-        <el-backtop :right="50" :bottom="50" />
+        <AsideBtns v-if="state?.meta" :data="state">
+            <svg-icon class="float-menu btn-item" style="position: relative; top: 0; left: 0" icon-class="detail" @click="showAside" />
+        </AsideBtns>
+        <el-backtop :right="50" :bottom="80" />
     </div>
 </template>
 
@@ -27,6 +30,7 @@ import Content from "./components/Content.vue"
 import UserInfo from "./components/UserInfo.vue"
 import TagCard from "@/components/TagCard.vue"
 import Catalogue from "./components/Catalogue.vue"
+import AsideBtns from "./components/AsideBtns.vue"
 import Comment from "./components/Comment/Comment.vue"
 import { User } from "@/interface/user/user"
 import { Article, Meta } from "@/interface/article/article"
@@ -96,6 +100,13 @@ function jumpTag(tagName: string) {
     })
     window.open(url.href, "_blank")
 }
+
+//响应式菜单显示
+const show = ref(false)
+function showAside() {
+    show.value = !show.value
+    console.log(show.value)
+}
 </script>
 
 <style>
@@ -109,6 +120,9 @@ function jumpTag(tagName: string) {
 }
 
 /* 内容 */
+.main-container {
+    overflow: visible;
+}
 #content {
     width: 820px;
     max-width: 100%;
@@ -188,15 +202,15 @@ function jumpTag(tagName: string) {
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.14);
 }
 
-.user-avatar {
+.user-info .user-avatar {
     text-align: center;
 }
-.user-avatar .el-avatar {
+.user-info .user-avatar .el-avatar {
     height: 70px;
     width: 70px;
 }
 
-.user-avatar p {
+.user-info .user-avatar p {
     margin: 10px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -319,6 +333,46 @@ function jumpTag(tagName: string) {
     cursor: pointer;
 }
 .comment-reply:hover {
+    color: skyblue;
+}
+
+/* 左侧按钮组 */
+.article-btns {
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+}
+.btn-item {
+    color: #8a919f;
+    cursor: pointer;
+    height: 10px;
+    width: 10px;
+    margin: 10px;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 10%);
+    font-size: 25px;
+}
+.count-likes-active {
+    color: pink;
+}
+.count-star-active {
+    color: orange;
+}
+.count-likes:hover {
+    color: pink;
+}
+.count-star:hover {
+    color: orange;
+}
+.count-comment:hover {
     color: skyblue;
 }
 </style>

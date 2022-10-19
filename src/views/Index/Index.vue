@@ -3,13 +3,14 @@
         <RegionMenu />
         <div class="index-container">
             <Article />
-            <div class="aside-container">
+            <div :class="{ 'aside-container': true, 'reactive-aside': true, 'show-aside': show }">
                 <Notice />
                 <Tags />
                 <UserRank />
                 <Footer />
             </div>
         </div>
+        <svg-icon class="float-menu" icon-class="detail" @click="showAside" />
         <el-backtop :right="50" :bottom="50" />
     </div>
 </template>
@@ -21,6 +22,13 @@ import Tags from "./components/AsideTabs/Tags.vue"
 import UserRank from "./components/AsideTabs/UserRank.vue"
 import Notice from "./components/AsideTabs/Notice.vue"
 import Footer from "./components/AsideTabs/Footer.vue"
+import { ref } from "@vue/reactivity"
+
+const show = ref(false)
+function showAside() {
+    show.value = !show.value
+    console.log(show.value)
+}
 </script>
 
 <style scoped>

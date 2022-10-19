@@ -6,6 +6,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import './styles/transition.scss'
+import "./styles/reactive.scss"
 //全局路由守卫
 import '@/router/router-guard'
 //自定义图标

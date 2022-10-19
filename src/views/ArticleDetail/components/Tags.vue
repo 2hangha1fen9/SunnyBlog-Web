@@ -42,3 +42,18 @@ function jumpArticleList(tagName: string) {
     window.open(url.href, "_blank")
 }
 </script>
+
+<style scoped>
+/* 标签视图 */
+.tag-card {
+    margin-top: 20px;
+    width: 100%;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.14);
+}
+.tag-item {
+    cursor: pointer;
+    margin: 5px;
+    border: none;
+    box-shadow: 3px 0px 7px rgb(0 0 0 / 12%);
+}
+</style>

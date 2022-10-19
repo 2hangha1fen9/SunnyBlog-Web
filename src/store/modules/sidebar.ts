@@ -6,6 +6,9 @@ const state: Sidebar = {
     }
 }
 const mutations = {
+    SET_STATUS: (state: Sidebar, flag: boolean) => {
+        state.sidebar.opened = flag
+    },
     TOGGLE_SIDEBAR: (state: Sidebar) => {
         //对状态取反
         state.sidebar.opened = !state.sidebar.opened
@@ -27,6 +30,9 @@ const actions = {
     },
     closeSideBar({ commit }: any) {
         commit('CLOSE_SIDEBAR')
+    },
+    setStatus({ commit }: any, flag: boolean) {
+        commit('SET_STATUS', flag)
     }
 }
 const getters = {
