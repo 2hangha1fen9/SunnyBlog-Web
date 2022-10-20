@@ -4,9 +4,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, nextTick, watch } from "vue"
+import { onMounted, ref, nextTick, watch, getCurrentInstance, onUnmounted } from "vue"
 import { useStore } from "vuex"
 import Vditor from "vditor"
+import { useDark } from "@vueuse/core"
 import "vditor/dist/index.css"
 import { User } from "@/interface/user/user"
 import { Response } from "@/interface/common/response"
@@ -15,7 +16,9 @@ import { updateUserInfo } from "@/api/user/user"
 import { ElMessage } from "element-plus"
 import { getImgUrl } from "@/utils/converter"
 
-
+//判断是否是黑暗模式
+const isDark = useDark()
+const instance = getCurrentInstance()
 const store = useStore()
 const userId = store.getters["identity/userId"]
 //markdown编辑器
@@ -44,6 +47,7 @@ onMounted(() => {
             toolbarConfig: {
                 hide: true,
             },
+            theme: isDark.value ? "dark" : "classic",
             upload: {
                 //自定义上传逻辑
                 accept: "image/*",
@@ -52,7 +56,7 @@ onMounted(() => {
                     formData.append("data", files[0])
                     uploadPicture(formData).then((data: Response<string>) => {
                         if (data.status === 200) {
-                            let imgUrl = getImgUrl("article-service",data.result.path,false)
+                            let imgUrl = getImgUrl("article-service", data.result.path, false)
                             let linkUrl = `![${"img"}](${imgUrl})`
                             vditor.value?.insertValue(linkUrl)
                         } else {
@@ -91,6 +95,13 @@ watch(
                     markdown: {
                         toc: true,
                     },
+                    theme: {
+                        current: isDark.value ? "dark" : "light",
+                    },
+                    hljs: {
+                        lineNumber: true,
+                        style: isDark.value ? "native" : "github",
+                    },
                 })
             }
         })
@@ -99,4 +110,14 @@ watch(
         immediate: true,
     }
 )
+
+//切换黑暗模式事件
+instance?.proxy?.$bus.on("switchStyle", switchStyle)
+function switchStyle(status: boolean) {
+    vditor.value?.setTheme(status ? "dark" : "classic")
+    Vditor.setContentTheme(status ? "dark" : "light", "https://unpkg.com/vditor@3.8.17/dist/css/content-theme/")
+}
+onUnmounted(() => {
+    instance?.proxy?.$bus.all.delete("switchStyle")
+})
 </script>

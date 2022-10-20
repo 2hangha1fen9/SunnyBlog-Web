@@ -29,8 +29,7 @@
                 </div>
             </template>
         </el-skeleton>
-        <el-empty v-if="items.totalCount <= 0">
-        </el-empty>
+        <el-empty v-if="items.totalCount <= 0"> </el-empty>
     </div>
 </template>
 
@@ -55,7 +54,6 @@ function jumpArticle(aid: number) {
     })
     window.open(url.href, "_blank")
 }
-
 </script>
 
 <style>
@@ -64,6 +62,7 @@ function jumpArticle(aid: number) {
     width: 100%;
     max-width: 100%;
     margin: 0 auto;
+    background-color: var(--el-bg-color);
 }
 
 /* 加载骨架屏 */
@@ -73,7 +72,7 @@ function jumpArticle(aid: number) {
     align-items: center;
     cursor: pointer;
     padding: 0px 10px 0px 10px;
-    border-bottom: 0.5px solid lightgray;
+    border-bottom: 0.5px solid var(--el-border-color);
 }
 
 /* 文章条目 */
@@ -85,10 +84,10 @@ function jumpArticle(aid: number) {
     align-items: center;
     cursor: pointer;
     padding: 0px 10px 0px 10px;
-    border-bottom: 0.5px solid lightgray;
+    border-bottom: 0.5px solid var(--el-border-color);
 }
 .article-block:hover {
-    background: #fafafa;
+    background: var(--el-fill-color-light);
 }
 
 /* 行间距 */
@@ -100,10 +99,11 @@ function jumpArticle(aid: number) {
 }
 
 .article-meta > span {
-    color: #86909c !important;
+    color: var(--el-text-color-secondary) !important;
 }
 
 .article-title {
+    color: var(--el-text-color-primary);
     overflow: hidden;
     text-overflow: ellipsis;
     -webkit-box-orient: vertical;
@@ -112,7 +112,7 @@ function jumpArticle(aid: number) {
 
 /* 文章摘要 */
 .article-summay {
-    color: #86909c;
+    color: var(--el-text-color-secondary);
     font-size: 13px;
     line-height: 22px;
     display: -webkit-box;
@@ -125,7 +125,7 @@ function jumpArticle(aid: number) {
 /* 点赞数据间距 */
 .article-count-item {
     margin: 5px;
-    color: #86909c;
+    color: var(--el-text-color-secondary);
 }
 .count-likes:hover,
 .count-likes-active {
@@ -145,7 +145,7 @@ function jumpArticle(aid: number) {
     width: 120px;
     height: 80px;
     margin-left: 24px;
-    background-color: #fff;
+    background-color: var(--el-bg-color);
     border-radius: 2px;
 }
 .tag {

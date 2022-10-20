@@ -128,9 +128,8 @@ function showAside() {
     max-width: 100%;
     min-height: 600px;
     padding: 20px;
-    background-color: white;
     box-sizing: border-box;
-    box-shadow: 0px -90px 20px rgba(0, 0, 0, 0.03), 0px 5px 20px rgba(0, 0, 0, 11%);
+    box-shadow: var(--el-box-shadow);
 }
 
 .pure-cover,
@@ -167,7 +166,7 @@ function showAside() {
     padding: 20px 0px 0px 20px;
     width: 820px;
     max-width: 100%;
-    background: white;
+    background: var(--el-bg-color);
     transform: translate3d(0px, 0px, 1px);
 }
 
@@ -197,9 +196,9 @@ function showAside() {
     cursor: pointer;
     box-sizing: border-box;
     padding: 20px;
-    background-color: white;
+    background-color: var(--el-bg-color);
     border-radius: 4px;
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.14);
+    box-shadow: var(--el-box-shadow);
 }
 
 .user-info .user-avatar {
@@ -230,22 +229,23 @@ function showAside() {
 
 /* 目录卡片 */
 #catalogue {
+    transition: none !important;
     margin-top: 20px;
     box-sizing: border-box;
     width: 100%;
     padding: 10px;
-    background-color: white;
+    background-color: var(--el-bg-color);
     border-radius: 4px;
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.14);
+    box-shadow: var(--el-box-shadow);
 }
 #catalogue li > span.vditor-outline__item--current {
-    border-left: 1px solid #4285f4;
-    color: #4285f4;
-    background-color: #f6f8fa;
+    border-left: 1px solid var(--el-color-primary);
+    color: var(--el-color-primary);
+    background-color: var(--el-fill-color-extra-light);
 }
 #catalogue li > span:hover {
-    color: #4285f4;
-    background-color: #f6f8fa;
+    color: var(--el-color-primary);
+    background-color: var(--el-fill-color-extra-light);
 }
 .sticky-catalogue {
     top: 0px;
@@ -259,13 +259,13 @@ function showAside() {
 .tag-card {
     margin-top: 20px;
     width: 100%;
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.14);
+    box-shadow: var(--el-box-shadow);
 }
 .tag-item {
     cursor: pointer;
     margin: 5px;
     border: none;
-    box-shadow: 3px 0px 7px rgb(0 0 0 / 12%);
+    box-shadow: var(--el-box-shadow);
 }
 
 /* 评论编辑 */
@@ -274,7 +274,7 @@ function showAside() {
     max-width: 100%;
     margin-top: 20px;
     border-radius: 4px;
-    box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 7%);
+    box-shadow: var(--el-box-shadow);
 }
 .comment-bar {
     display: flex;
@@ -346,7 +346,7 @@ function showAside() {
     flex-direction: column;
 }
 .btn-item {
-    color: #8a919f;
+    color: var(--el-text-color-secondary);
     cursor: pointer;
     height: 10px;
     width: 10px;
@@ -356,8 +356,8 @@ function showAside() {
     justify-content: center;
     align-items: center;
     border-radius: 50%;
-    background-color: #ffffff;
-    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 10%);
+    background-color: var(--el-bg-color);
+    box-shadow: var(--el-box-shadow);
     font-size: 25px;
 }
 .count-likes-active {

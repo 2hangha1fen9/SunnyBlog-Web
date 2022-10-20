@@ -4,6 +4,7 @@
         <nav class="nav">
             <!-- 侧边栏按钮 -->
             <Hamburger :is-active="sidebar.opened" @toggleClick="toggleSideBar" />
+            <el-switch v-model="isDark" class="dark-btn" :inactive-icon="Sunny" :active-icon="Moon" :inline-prompt="true" />
             <div class="nav-item title-item">
                 <input type="text" class="title-input" placeholder="请输入文章标题" v-model="article.title" />
                 <el-button round type="success" class="title-submit" :loading="setBtnLoading" @click="saveArticle">保存</el-button>
@@ -16,10 +17,10 @@
                         <Avatar :photo="photo" :username="username" :showUsername="false"></Avatar>
                     </template>
                     <template #default>
-                        <el-menu class="dropdown-menu" active-text-color="#303133">
-                            <el-menu-item index="0"><a href="/" target="blank" style="text-decoration: none; height: 100%; width: 100%; color: black">首页</a></el-menu-item>
-                            <el-menu-item index="1"><a :href="`/user/${userId}`" target="_blank" style="text-decoration: none; height: 100%; width: 100%; color: black">个人主页</a></el-menu-item>
-                            <el-menu-item index="2"><a :href="`/setting`" target="_blank" style="text-decoration: none; height: 100%; width: 100%; color: black">用户设置</a></el-menu-item>
+                        <el-menu class="dropdown-menu" active-text-color="var(--el-text-color-primary)">
+                            <el-menu-item index="0"><a href="/" target="blank" style="text-decoration: none; height: 100%; width: 100%; color: var(--el-text-color-primary) !important">首页</a></el-menu-item>
+                            <el-menu-item index="1"><a :href="`/user/${userId}`" target="_blank" style="text-decoration: none; height: 100%; width: 100%; color: var(--el-text-color-primary) !important">个人主页</a></el-menu-item>
+                            <el-menu-item index="2"><a :href="`/setting`" target="_blank" style="text-decoration: none; height: 100%; width: 100%; color: var(--el-text-color-primary) !important">用户设置</a></el-menu-item>
                             <el-menu-item index="3" @click="artDialogVisible = true">文章管理</el-menu-item>
                             <el-menu-item index="4" @click="tagDialogVisible = true">标签管理</el-menu-item>
                             <el-menu-item index="5" @click="restoreDialogVisible = true">回收站</el-menu-item>
@@ -57,6 +58,8 @@ import "vditor/dist/index.css"
 import { ref, onMounted, computed, watch, nextTick, getCurrentInstance, onUnmounted } from "vue"
 import { useStore } from "vuex"
 import { useRoute, useRouter } from "vue-router"
+import { useDark, useToggle } from "@vueuse/core"
+import { Sunny, Moon } from "@element-plus/icons-vue"
 import { ElMessage } from "element-plus"
 import ArticleSettingPanel from "../Dialog/ArticleSettingPanel.vue"
 import ArticleRecycleBin from "../Dialog/ArticleRecycleBin.vue"
@@ -64,6 +67,7 @@ import ArticleManager from "../Dialog/ArticleManager.vue"
 import Hamburger from "../SideBar/Hamburger.vue"
 import Avatar from "@/components/Avatar.vue"
 import TagManager from "../Dialog/TagManager.vue"
+
 //接口
 import { Article } from "@/interface/article/article"
 import { Response } from "@/interface/common/response"
@@ -72,6 +76,8 @@ import { uploadPicture } from "@/api/article/drawing-bed"
 import { updateArticle, getArticle } from "@/api/article/article"
 import { getImgUrl } from "@/utils/converter"
 
+//判断是否是黑暗模式
+const isDark = useDark()
 const router = useRouter()
 const route = useRoute()
 const store = useStore() //使用vuex
@@ -146,6 +152,7 @@ function initEditor() {
             enable: true,
             type: "text",
         },
+        theme: isDark.value ? "dark" : "classic",
         toolbar: ["emoji", "headings", "bold", "italic", "strike", "line", "|", "outdent", "indent", "|", "quote", "list", "ordered-list", "check", "table", "|", "code", "inline-code", "|", "insert-after", "insert-before", "|", "undo", "redo", "|", "upload", "link", "|", "code-theme", "content-theme", "export", "|", "edit-mode", "preview", "outline", "fullscreen"],
         upload: {
             //自定义上传逻辑
@@ -167,6 +174,7 @@ function initEditor() {
         after() {
             nextTick(() => {
                 isEdit.value && initArticle()
+                vditor.value?.setTheme(isDark.value ? "dark" : "classic")
             })
         },
     })
@@ -280,6 +288,7 @@ onMounted(() => {
     addEventListener("resize", collspaseAdide)
 })
 
+//收起侧边栏
 collspaseAdide()
 function collspaseAdide() {
     if (document.documentElement.clientWidth <= 1000) {
@@ -288,6 +297,21 @@ function collspaseAdide() {
         store.dispatch("sidebar/setStatus", false)
     }
 }
+
+//监听黑暗模式变化
+watch(
+    isDark,
+    (newVal) => {
+        nextTick(() => {
+            vditor.value?.setTheme(newVal ? "dark" : "classic")
+        })
+
+        instance?.proxy?.$bus.emit("switchStyle", newVal)
+    },
+    {
+        immediate: true,
+    }
+)
 
 onUnmounted(() => {
     instance?.proxy?.$bus.all.delete("updateCategory")
@@ -307,7 +331,7 @@ onUnmounted(() => {
     justify-content: flex-end;
     height: var(--el-menu-item-height);
     overflow: hidden;
-    background: #fff;
+    background: var(--el-bg-color);
 }
 .title-input {
     outline: none;
@@ -315,7 +339,8 @@ onUnmounted(() => {
     width: 100%;
     font-size: 24px;
     font-weight: 500;
-    color: #1d2129;
+    background: var(--el-bg-color);
+    color: var(--el-text-color-secondary);
     padding-left: 10px;
 }
 .nav-item {
@@ -335,7 +360,7 @@ onUnmounted(() => {
 .editor-container {
     position: relative;
     min-height: 100%;
-    background-color: rgb(246, 248, 249);
+    background-color: var(--el-bg-color) !important;
 }
 .main {
     width: 100%;
@@ -345,8 +370,15 @@ onUnmounted(() => {
 #vditor {
     border: none;
 }
+
+#vditor .vditor-content .vditor-reset {
+    color: var(--el-text-color-primary);
+    background-color: var(--el-bg-color);
+}
+
 .vditor-toolbar {
-    background-color: #fff !important;
+    border-bottom: 1px solid var(--el-border-color);
+    background-color: var(--el-bg-color) !important;
 }
 
 .dropdown-menu {
@@ -355,5 +387,10 @@ onUnmounted(() => {
 .el-menu-item {
     height: 40px;
     line-height: 40px;
+}
+
+.dark-btn {
+    --el-switch-on-color: var(--el-mask-color-extra-light);
+    transition: border-color var(--el-transition-duration), background-color var(--el-transition-duration);
 }
 </style>

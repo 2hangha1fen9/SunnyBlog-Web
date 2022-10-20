@@ -205,7 +205,7 @@ function showAside() {
     cursor: pointer;
     margin: 5px;
     border: none;
-    box-shadow: 3px 0px 7px rgb(0 0 0 / 12%);
+    box-shadow: var(--el-box-shadow);
 }
 
 .user-sex .svg-icon {
@@ -223,7 +223,7 @@ function showAside() {
     padding: 20px;
     margin: 20px 0px 20px;
     box-sizing: border-box;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.02), 0px 5px 20px rgba(0, 0, 0, 9%);
+    box-shadow: var(--el-box-shadow);
 }
 .user-normal-info {
     position: relative;
@@ -233,7 +233,7 @@ function showAside() {
     margin-right: 25px;
 }
 .user-normal-avatar .el-avatar {
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.03), 0px 5px 20px rgba(0, 0, 0, 11%);
+    box-shadow: var(--el-box-shadow);
     height: 100px;
     width: 100px;
 }
@@ -259,8 +259,8 @@ function showAside() {
     justify-content: flex-start;
     height: 40px;
     top: 0;
-    border-bottom: 1px solid rgba(211, 211, 211, 0.626);
-    background-image: radial-gradient(transparent 1px, #ffff 1px);
+    border-bottom: 1px solid var(--el-border-color);
+    background-image: radial-gradient(transparent 1px, var(--el-bg-color) 1px);
     background-size: 4px 4px;
     backdrop-filter: saturate(50%) blur(4px);
     -webkit-backdrop-filter: saturate(50%) blur(4px);
@@ -276,7 +276,7 @@ function showAside() {
 }
 
 .user-tab {
-    box-shadow: 0px 0px 10px rgb(0 0 0 / 2%), 0px 5px 20px rgb(0 0 0 / 9%);
+    box-shadow: var(--el-box-shadow);
     width: 820px;
     min-height: 600px;
 }
@@ -312,7 +312,7 @@ function showAside() {
     padding-inline-start: 0px;
 }
 .comment-item {
-    border-bottom: 0.5px solid lightgray;
+    border-bottom: 0.5px solid var(--el-border-color);
     padding-bottom: 5px;
     padding-left: 5px;
     box-sizing: border-box;
@@ -345,7 +345,7 @@ function showAside() {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    border-bottom: 0.5px solid lightgray;
+    border-bottom: 0.5px solid var(--el-border-color);
     padding: 10px 10px;
 }
 
@@ -370,22 +370,24 @@ function showAside() {
     display: none;
 }
 #board .vditor-content .vditor-reset {
+    background: var(--el-bg-color);
     padding: 10px !important;
 }
 #board ::-webkit-scrollbar {
     display: none;
 }
 .board-card {
-    box-shadow: 0px 0px 10px rgb(0 0 0 / 2%), 0px 5px 20px rgb(0 0 0 / 9%);
+    box-shadow: var(--el-box-shadow);
     margin-top: 20px;
     min-height: 200px;
     max-height: 400px;
     padding: 0px;
 }
 .board-preview {
-    box-shadow: 0px 0px 10px rgb(0 0 0 / 2%), 0px 5px 20px rgb(0 0 0 / 9%);
+    border: var(--el-border-color);
+    background: var(--el-bg-color);
+    box-shadow: var(--el-box-shadow);
     padding: 10px;
-    background: #ffff;
 }
 .board-card::-webkit-scrollbar {
     display: none;
@@ -394,13 +396,13 @@ function showAside() {
 /* 标签卡片 */
 .user-aside .tag-card {
     margin-top: 20px;
-    box-shadow: 0px 0px 10px rgb(0 0 0 / 2%), 0px 5px 20px rgb(0 0 0 / 9%);
+    box-shadow: var(--el-box-shadow);
 }
 .user-aside .tag-item {
     cursor: pointer;
     margin: 5px;
     border: none;
-    box-shadow: 3px 0px 7px rgb(0 0 0 / 12%);
+    box-shadow: var(--el-box-shadow);
 }
 
 /* 文章总览 */

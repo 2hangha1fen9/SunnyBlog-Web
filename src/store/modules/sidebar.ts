@@ -8,6 +8,7 @@ const state: Sidebar = {
 const mutations = {
     SET_STATUS: (state: Sidebar, flag: boolean) => {
         state.sidebar.opened = flag
+        localStorage.setItem('sidebarStatus', flag ? "1" : "0")
     },
     TOGGLE_SIDEBAR: (state: Sidebar) => {
         //对状态取反

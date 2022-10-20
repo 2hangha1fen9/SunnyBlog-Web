@@ -19,6 +19,7 @@ import { Article } from "@/interface/article/article"
 import { Response } from "@/interface/common/response"
 import { ElMessage } from "element-plus"
 import { likeArticle } from "@/api/comment/like"
+
 const props = defineProps<{
     data: Article
 }>()
@@ -52,44 +53,3 @@ function toComment() {
 }
 </script>
 
-<style scoped>
-/* 左侧按钮组 */
-.article-btns {
-    position: fixed;
-    left: 20px;
-    bottom: 20px;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-}
-.btn-item {
-    color: #8a919f;
-    cursor: pointer;
-    height: 10px;
-    width: 10px;
-    margin: 10px;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
-    background-color: #ffffff;
-    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 10%);
-    font-size: 25px;
-}
-.count-likes-active {
-    color: pink;
-}
-.count-star-active {
-    color: orange;
-}
-.count-likes:hover {
-    color: pink;
-}
-.count-star:hover {
-    color: orange;
-}
-.count-comment:hover {
-    color: skyblue;
-}
-</style>

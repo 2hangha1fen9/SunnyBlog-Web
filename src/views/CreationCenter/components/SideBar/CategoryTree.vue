@@ -421,7 +421,7 @@ onUnmounted(() => {
     width: 100%;
 }
 .editorInput {
-    outline-color: #40a0ffb3;
+    outline-color: var(--el-color-primary);
 }
 .filter-input >>> .el-input__wrapper {
     width: 100%;

@@ -11,12 +11,14 @@
         </div>
         <div class="right-container">
             <SearchBar />
+
             <!-- 创作中心 -->
             <el-button type="primary" @click="jumpCreation">
                 <svg-icon icon-class="creation" />
                 创作中心
             </el-button>
             <!-- 头像 -->
+            <el-switch v-model="isDark" class="dark-btn" :inactive-icon="Sunny" :active-icon="Moon" :inline-prompt="true" />
             <svg-icon v-if="isValid" class="notify-btn" icon-class="notify" @click="router.push('/notification')">消息</svg-icon>
             <p class="avatar-container" v-if="isValid">
                 <el-popover>
@@ -24,8 +26,8 @@
                         <Avatar :photo="photo" :username="username" :showUsername="false"></Avatar>
                     </template>
                     <template #default>
-                        <el-menu class="dropdown-menu" active-text-color="#303133">
-                            <el-menu-item index="0"><a :href="`/user/${userId}`" style="text-decoration: none; height: 100%; width: 100%; color: black">个人主页</a></el-menu-item>
+                        <el-menu class="dropdown-menu" active-text-color="var(--el-text-color-primary)" >
+                            <el-menu-item index="0"><a :href="`/user/${userId}`" style="text-decoration: none; height: 100%; width: 100%; color: var(--el-text-color-primary)">个人主页</a></el-menu-item>
                             <el-menu-item index="1" @click="router.push('/setting')">用户设置</el-menu-item>
                             <el-menu-item index="2" @click="toggleState">{{ isValid ? "登出" : "登录" }}</el-menu-item>
                         </el-menu>
@@ -40,14 +42,18 @@
 
 <script setup lang="ts">
 import Avatar from "@/components/Avatar.vue"
-import { computed, onMounted, ref } from "vue"
+import { computed, getCurrentInstance, onMounted, ref, watch } from "vue"
+import { useDark, useToggle } from "@vueuse/core"
+import { Sunny, Moon } from "@element-plus/icons-vue"
 import { useStore } from "vuex"
 import { useRouter, useRoute } from "vue-router"
 import SearchBar from "./SearchBar.vue"
 
+const isDark = useDark()
 const store = useStore()
 const router = useRouter()
 const route = useRoute()
+const instance = getCurrentInstance()
 
 const userId = computed(() => store.getters["identity/userId"])
 const username = computed(() => store.getters["identity/username"])
@@ -91,6 +97,11 @@ function jumpCreation() {
     window.open(url.href, "_blank")
 }
 
+//监听黑暗模式变化
+watch(isDark, (newVal) => {
+    instance?.proxy?.$bus.emit("switchStyle", newVal)
+})
+
 onMounted(() => {
     window.addEventListener("scroll", watchScroll)
 })
@@ -106,8 +117,8 @@ onMounted(() => {
     transition: all 0.5s;
     position: sticky;
     top: 0;
-    border-bottom: 1px solid rgba(211, 211, 211, 0.626);
-    background-image: radial-gradient(transparent 1px, #ffff 1px);
+    border-bottom: 1px solid var(--el-border-color);
+    background-image: radial-gradient(transparent 1px, var(--el-bg-color) 1px);
     background-size: 4px 4px;
     backdrop-filter: saturate(50%) blur(4px);
     -webkit-backdrop-filter: saturate(50%) blur(4px);
@@ -172,5 +183,10 @@ onMounted(() => {
 .el-menu-item {
     height: 40px;
     line-height: 40px;
+}
+
+.dark-btn {
+    margin: 10px;
+    --el-switch-on-color: var(--el-mask-color-extra-light);
 }
 </style>

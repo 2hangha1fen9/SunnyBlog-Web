@@ -98,8 +98,8 @@ onBeforeUnmount(() => {
     justify-content: center;
     height: 40px;
     top: 0;
-    border-bottom: 1px solid rgba(211, 211, 211, 0.626);
-    background-image: radial-gradient(transparent 1px, #ffff 1px);
+    border-bottom: 1px solid var(--el-border-color);
+    background-image: radial-gradient(transparent 1px, var(--el-bg-color) 1px);
     background-size: 4px 4px;
     backdrop-filter: saturate(50%) blur(4px);
     -webkit-backdrop-filter: saturate(50%) blur(4px);

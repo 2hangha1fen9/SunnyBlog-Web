@@ -6,11 +6,15 @@
 import Vditor from "vditor"
 import "vditor/dist/index.css"
 import { ElMessage } from "element-plus"
-import { ref, onMounted, nextTick } from "vue"
+import { ref, onMounted, nextTick, getCurrentInstance, onUnmounted } from "vue"
+import { useDark } from "@vueuse/core"
 import { Response } from "@/interface/common/response"
 import { getConfig } from "@/api/article/siteconfig"
 
+//判断是否是黑暗模式
+const isDark = useDark()
 const preview = ref()
+const instance = getCurrentInstance()
 
 getConfig("notice").then((data: Response<string>) => {
     if (data.status === 200) {
@@ -19,17 +23,34 @@ getConfig("notice").then((data: Response<string>) => {
                 markdown: {
                     toc: true,
                 },
+                theme: {
+                    current: isDark.value ? "dark" : "light",
+                },
+                hljs: {
+                    lineNumber: true,
+                    style: isDark.value ? "native" : "github",
+                },
             })
         })
     }
+})
+
+//切换黑暗模式事件
+instance?.proxy?.$bus.on("switchStyle", switchStyle)
+function switchStyle(status: boolean) {
+    Vditor.setContentTheme(status ? "dark" : "light", "https://unpkg.com/vditor@3.8.17/dist/css/content-theme/")
+}
+
+onUnmounted(() => {
+    instance?.proxy?.$bus.all.delete("switchStyle")
 })
 </script>
 
 <style scoped>
 .board-preview {
-    box-shadow: 0px 0px 10px rgb(0 0 0 / 2%), 0px 5px 20px rgb(0 0 0 / 9%);
+    box-shadow: var(--el-box-shadow);
     padding: 10px;
-    background: #ffff;
+    background: var(--el-bg-color);
     margin-bottom: 20px;
 }
 .board-card::-webkit-scrollbar {

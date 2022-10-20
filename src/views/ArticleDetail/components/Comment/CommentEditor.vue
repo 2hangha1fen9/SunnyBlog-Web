@@ -21,6 +21,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed, reactive, getCurrentInstance, onUnmounted, nextTick } from "vue"
 import { useStore } from "vuex"
+import { useDark } from "@vueuse/core"
 import Vditor from "vditor"
 import Avatar from "@/components/Avatar.vue"
 import "vditor/dist/index.css"
@@ -31,6 +32,9 @@ import { uploadPicture } from "@/api/comment/drawing-bed"
 import { publishComment } from "@/api/comment/comment"
 import { getImgUrl } from "@/utils/converter"
 
+
+//判断是否是黑暗模式
+const isDark = useDark()
 const store = useStore()
 const instance = getCurrentInstance()
 const username = computed(() => store.getters["identity/username"])
@@ -82,6 +86,13 @@ function replyComment(comment: Comment) {
             markdown: {
                 mark: true,
             },
+            theme: {
+                current: isDark.value ? "dark" : "light",
+            },
+            hljs: {
+                lineNumber: true,
+                style: isDark.value ? "native" : "github",
+            },
         })
     })
 }
@@ -98,7 +109,6 @@ function cleanToReply() {
 //markdown编辑器
 const vditor = ref<Vditor | null>(null)
 onMounted(() => {
-    //markdown编辑器配置
     vditor.value = new Vditor("vditor", {
         preview: {
             markdown: {
@@ -108,6 +118,7 @@ onMounted(() => {
         cache: {
             enable: false,
         },
+        theme: isDark.value ? "dark" : "classic",
         placeholder: "善语善人心,恶言伤人心~",
         toolbar: ["emoji", "undo", "redo", "upload"],
         upload: {
@@ -131,8 +142,15 @@ onMounted(() => {
     })
 })
 
+//切换黑暗模式事件
+instance?.proxy?.$bus.on("switchStyle", switchStyle)
+function switchStyle(status: boolean) {
+    vditor.value?.setTheme(status ? "dark" : "classic")
+}
+
 onUnmounted(() => {
     instance?.proxy?.$bus.all.delete("replyComment")
+    instance?.proxy?.$bus.all.delete("switchStyle")
 })
 </script>
 
@@ -142,6 +160,6 @@ onUnmounted(() => {
     border-bottom: 1px solid var(--border-color);
 }
 #vditor >>> .vditor-toolbar {
-    background-color: #fff !important;
+    background-color: var(--el-bg-color) !important;
 }
 </style>

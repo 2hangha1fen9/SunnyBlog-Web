@@ -11,9 +11,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, nextTick, ref, getCurrentInstance, onMounted } from "vue"
+import { computed, reactive, nextTick, ref, getCurrentInstance, onMounted, onUnmounted } from "vue"
 import { format } from "timeago.js"
 import "vditor/dist/index.css"
+import { useDark } from "@vueuse/core"
 import Vditor from "vditor"
 import CommentListItem from "@/components/CommentListItem.vue"
 import { ElMessage } from "element-plus"
@@ -23,7 +24,9 @@ import { Comment } from "@/interface/comment/comment"
 import { publishComment } from "@/api/comment/comment"
 import { getImgUrl } from "@/utils/converter"
 
-
+//判断是否是黑暗模式
+const instance = getCurrentInstance()
+const isDark = useDark()
 const commentRef = ref()
 const btnLoading = ref(false)
 const props = defineProps<{
@@ -42,7 +45,7 @@ const state = reactive<Comment>({
 //获取照片真实路径
 const photo = computed(() => {
     if (props?.comment.photo) {
-        return getImgUrl("user-service",props?.comment.photo)
+        return getImgUrl("user-service", props?.comment.photo)
     }
     return null
 })
@@ -76,6 +79,13 @@ nextTick(() => {
         markdown: {
             mark: true,
         },
+        theme: {
+            current: isDark.value ? "dark" : "light",
+        },
+        hljs: {
+            lineNumber: true,
+            style: isDark.value ? "native" : "github",
+        },
     })
 })
 
@@ -92,6 +102,7 @@ onMounted(() => {
         cache: {
             enable: false,
         },
+        theme: isDark.value ? "dark" : "classic",
         toolbar: ["emoji", "undo", "redo", "upload"],
         upload: {
             //自定义上传逻辑
@@ -102,7 +113,7 @@ onMounted(() => {
                 uploadPicture(formData).then((data: Response<string>) => {
                     if (data.status === 200) {
                         debugger
-                        let imgUrl = getImgUrl("comment-service",data.result.path,false)
+                        let imgUrl = getImgUrl("comment-service", data.result.path, false)
                         let linkUrl = `![${"img"}](${imgUrl})`
                         vditor.value?.insertValue(linkUrl)
                     } else {
@@ -113,11 +124,20 @@ onMounted(() => {
         },
     })
 })
+
+//切换黑暗模式事件
+instance?.proxy?.$bus.on("switchStyle", switchStyle)
+function switchStyle(status: boolean) {
+    vditor.value?.setTheme(status ? "dark" : "classic")
+}
+onUnmounted(() => {
+    instance?.proxy?.$bus.all.delete("switchStyle")
+})
 </script>
 
 <style scoped>
 #vditor >>> .vditor-toolbar {
-    background-color: #fff !important;
+    background-color: var(--el-bg-color) !important;
 }
 
 .comment-info {

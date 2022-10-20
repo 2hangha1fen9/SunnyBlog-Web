@@ -213,10 +213,10 @@ getAllTag()
     cursor: pointer;
     margin: 5px;
     border: none;
-    box-shadow: 3px 0px 7px rgb(0 0 0 / 12%);
+    box-shadow: var(--el-box-shadow);
 }
 .tag-fieldset {
-    color: lightgray;
-    border: 2px dashed lightgray;
+    color: var(--el-text-color-secondary);
+    border: 2px dashed var(--el-text-color-secondary);
 }
 </style>

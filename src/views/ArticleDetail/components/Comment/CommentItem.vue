@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, getCurrentInstance } from "vue"
+import { computed, nextTick, ref, getCurrentInstance, onUnmounted } from "vue"
 import { format } from "timeago.js"
 import "vditor/dist/index.css"
 import Vditor from "vditor"
@@ -24,7 +24,10 @@ import CommentList from "./CommentList.vue"
 import Avatar from "@/components/Avatar.vue"
 import { Comment } from "@/interface/comment/comment"
 import { getImgUrl } from "@/utils/converter"
+import { useDark } from "@vueuse/core"
 
+//判断是否是黑暗模式
+const isDark = useDark()
 const instance = getCurrentInstance()
 const props = defineProps<{
     comment: Comment
@@ -42,11 +45,30 @@ nextTick(() => {
         markdown: {
             mark: true,
         },
+        theme: {
+            current: isDark.value ? "dark" : "light",
+        },
+        hljs: {
+            lineNumber: true,
+            style: isDark.value ? "native" : "github",
+        },
     })
 })
+
+//切换黑暗模式事件
+instance?.proxy?.$bus.on("switchStyle", switchStyle)
+function switchStyle(status: boolean) {
+    Vditor.setContentTheme(status ? "dark" : "light", "https://unpkg.com/vditor@3.8.17/dist/css/content-theme/")
+    Vditor.setCodeTheme(status ? "native" : "github")
+}
 
 function reply(comment: Comment) {
     instance?.proxy?.$bus.emit("replyComment", comment)
     window.scrollTo({ top: document.getElementById("vditor")?.offsetTop, behavior: "smooth" }) //滚动到页面顶部
 }
+
+onUnmounted(() => {
+    instance?.proxy?.$bus.all.delete("replyComment")
+    instance?.proxy?.$bus.all.delete("switchStyle")
+})
 </script>

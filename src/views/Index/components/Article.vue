@@ -162,7 +162,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 .order-bar {
-    border-bottom: 1px solid rgba(211, 211, 211, 0.626);
+    border-bottom: 1px solid var(--el-border-color);
     padding: 5px 0px 5px 10px;
     display: flex;
     justify-content: space-between;
@@ -172,6 +172,6 @@ onBeforeUnmount(() => {
     width: 820px;
     max-width: 100%;
     margin-top: 20px;
-    box-shadow: 0px 0px 13.1px rgba(0, 0, 0, 0.024), 0px 0px 44px rgba(0, 0, 0, 0.036), 0px 0px 197px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--el-box-shadow);
 }
 </style>

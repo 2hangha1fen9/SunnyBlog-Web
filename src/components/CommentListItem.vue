@@ -27,16 +27,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, getCurrentInstance, reactive } from "vue"
+import { computed, nextTick, ref, getCurrentInstance, reactive, onUnmounted } from "vue"
 import { format } from "timeago.js"
 import "vditor/dist/index.css"
 import Vditor from "vditor"
+import { useDark } from "@vueuse/core"
 import Avatar from "@/components/Avatar.vue"
 import { Response } from "@/interface/common/response"
 import { Comment } from "@/interface/comment/comment"
 import { readComment, authorDeleteComment, allowComment } from "@/api/comment/comment"
 import { getImgUrl } from "@/utils/converter"
 
+//判断是否是黑暗模式
+const isDark = useDark()
 const instance = getCurrentInstance()
 const props = defineProps<{
     comment: Comment
@@ -66,7 +69,7 @@ for (let eventName in instance?.vnode.props) {
 
 const photo = computed(() => {
     if (props?.comment.photo) {
-        return  getImgUrl("user-service",props?.comment.photo)
+        return getImgUrl("user-service", props?.comment.photo)
     }
     return null
 })
@@ -78,7 +81,26 @@ nextTick(() => {
         markdown: {
             mark: true,
         },
+        theme: {
+            current: isDark.value ? "dark" : "light",
+        },
+        hljs: {
+            lineNumber: true,
+            style: isDark.value ? "native" : "github",
+        },
     })
+})
+
+//切换黑暗模式事件
+instance?.proxy?.$bus.on("switchStyle", switchStyle)
+function switchStyle(status: boolean) {
+    debugger
+    Vditor.setContentTheme(status ? "dark" : "light", "https://unpkg.com/vditor@3.8.17/dist/css/content-theme/")
+    Vditor.setCodeTheme(status ? "native" : "github")
+}
+
+onUnmounted(() => {
+    instance?.proxy?.$bus.all.delete("switchStyle")
 })
 </script>
 
