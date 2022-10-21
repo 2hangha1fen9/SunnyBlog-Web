@@ -70,6 +70,6 @@ function jumpArticleList(tagName: string) {
     cursor: pointer;
     margin: 5px;
     border: none;
-    box-shadow: 3px 0px 7px rgb(0 0 0 / 12%);
+    box-shadow: var(--el-box-shadow-lighter);
 }
 </style>

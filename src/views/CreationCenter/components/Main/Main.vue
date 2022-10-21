@@ -115,7 +115,7 @@ function toggleSideBar() {
 function initArticle() {
     getArticle(articleId.value).then((data: Response<Article>) => {
         article.value = data.result
-        vditor.value?.setTheme("classic", data.result.contentStyle, data.result.codeStyle)
+        vditor.value?.setTheme(isDark.value ? "dark" : "classic", data.result.contentStyle, data.result.codeStyle)
         vditor.value?.setValue(data.result.content || "")
 
         //将分类数据,标签数据转换为ID数组
@@ -174,7 +174,6 @@ function initEditor() {
         after() {
             nextTick(() => {
                 isEdit.value && initArticle()
-                vditor.value?.setTheme(isDark.value ? "dark" : "classic")
             })
         },
     })
@@ -291,7 +290,7 @@ onMounted(() => {
 //收起侧边栏
 collspaseAdide()
 function collspaseAdide() {
-    if (document.documentElement.clientWidth <= 1000) {
+    if (document.documentElement.clientWidth <= 1200) {
         store.dispatch("sidebar/setStatus", true)
     } else {
         store.dispatch("sidebar/setStatus", false)

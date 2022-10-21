@@ -420,6 +420,11 @@ onUnmounted(() => {
 .el-tree >>> .el-tree-node__label {
     width: 100%;
 }
+
+* {
+    transition: none !important;
+}
+
 .editorInput {
     outline-color: var(--el-color-primary);
 }

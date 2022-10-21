@@ -52,6 +52,6 @@ getTag()
     cursor: pointer;
     margin: 5px;
     border: none;
-    box-shadow: var(--el-box-shadow);
+    box-shadow: var(--el-box-shadow-lighter);
 }
 </style>

@@ -230,8 +230,8 @@ async function handleSend(form: FormInstance) {
     width: 350px;
     padding: 30px 20px 10px 20px;
     border-radius: 10px;
-    color: #fff;
-    background-color: rgba(255, 255, 255, 0.25);
+    color: var(--el-color-white);
+    background-color: var(--el-mask-color-extra-light);
     box-shadow: rgb(0 0 0 / 20%) 0 0 10px;
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
@@ -246,8 +246,8 @@ async function handleSend(form: FormInstance) {
 .forget-btn,
 .register-btn {
     font-size: 0.3em;
-    color: white;
-    background-color: rgba(255, 255, 255, 0.256);
+    color: var(--el-color-white);
+    background-color: var(--el-mask-color-extra-light);
     padding: 5px 15px 5px 15px;
     backdrop-filter: blur(20px);
     text-decoration: none;
@@ -257,6 +257,6 @@ async function handleSend(form: FormInstance) {
 }
 .forget-btn:hover,
 .register-btn:hover {
-    background-color: rgba(255, 255, 255, 0.566);
+    background-color: var(--el-mask-color);
 }
 </style>

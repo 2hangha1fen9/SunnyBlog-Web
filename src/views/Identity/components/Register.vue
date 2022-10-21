@@ -243,8 +243,8 @@ async function handleSend(form: FormInstance) {
     width: 350px;
     padding: 30px 20px 10px 20px;
     border-radius: 10px;
-    color: #fff;
-    background-color: rgba(255, 255, 255, 0.25);
+    color: var(--el-color-white);
+    background-color: var(--el-mask-color-extra-light);
     box-shadow: rgb(0 0 0 / 20%) 0 0 10px;
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
@@ -253,8 +253,8 @@ async function handleSend(form: FormInstance) {
 }
 .login-btn {
     font-size: 0.3em;
-    color: white;
-    background-color: rgba(255, 255, 255, 0.074);
+    color: var(--el-color-white);
+    background-color: var(--el-mask-color-extra-light);
     padding: 5px 15px 5px 15px;
     backdrop-filter: blur(20px);
     border-bottom-left-radius: 10px;
@@ -264,6 +264,6 @@ async function handleSend(form: FormInstance) {
     right: 0;
 }
 .login-btn:hover {
-    background-color: rgba(255, 255, 255, 0.25);
+    background-color: var(--el-mask-color);
 }
 </style>
