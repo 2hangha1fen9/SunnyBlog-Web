@@ -146,7 +146,7 @@ const watchScroll = debounce(function () {
     //变量scrollHeight是滚动条的总高度
     var scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight
     //滚动条到底部的条件
-    if (Math.ceil(scrollTop + windowHeight) >= scrollHeight) {
+    if (Math.ceil(scrollTop + windowHeight) >= scrollHeight - 100) {
         //到了这个就可以进行业务逻辑加载后台数据了
         moreArticle()
     }

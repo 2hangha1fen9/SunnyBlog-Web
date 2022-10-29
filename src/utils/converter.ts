@@ -17,6 +17,6 @@ export function dateFormatter(date: string) {
     return `${year}-${month}-${day}`
 }
 //获取图片真实路径
-export function getImgUrl(serviceName: string, refPath: string,disableCache = true) {
-    return `${process.env.VUE_APP_BASE_API}/${serviceName}${refPath}${disableCache && '?time=' + Date.now()}`
+export function getImgUrl(serviceName: string, refPath: string, disableCache = true) {
+    return `${process.env.VUE_APP_BASE_API}/${serviceName}${refPath}${disableCache ? '?time=' + Date.now() : ""}`
 }

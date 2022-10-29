@@ -77,6 +77,10 @@ function jumpArticle(aid: number) {
 
 /* 文章条目 */
 .article-block {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
     list-style: none;
     padding-inline-start: 0px;
     display: flex;

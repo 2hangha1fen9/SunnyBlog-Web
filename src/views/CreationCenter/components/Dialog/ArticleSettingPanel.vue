@@ -2,7 +2,7 @@
     <el-form :rules="rules" ref="formRef" :model="article" label-width="80px">
         <el-form-item label="封面" prop="photo">
             <el-upload class="avatar-uploader" :show-file-list="false" :auto-upload="false" :on-change="previewPhoto" name="data">
-                <el-image style="min-width: 200px; height: 150px; max-width: 100%; max-height: 100%; display: block" fit="scale-down" ref="photoRef" :src="photoUrl">
+                <el-image style="min-width: 200px; height: 150px; max-width: 100%; max-height: 100%; display: block" fit="scale-down" ref="photoRef" :src="article.photo">
                     <template #placeholder>
                         <el-skeleton-item variant="image" style="width: 100%; height: 100%" />
                     </template>
@@ -120,13 +120,7 @@ const tags = ref<Array<Tag>>([]) //所有标签
 const loading = ref(false)
 const formRef = ref<FormInstance>()
 const photoData = ref<FormData>(new FormData()) //待上传的图片数据
-const photoUrl = computed(() => {
-    if (photoData.value.get("data")) {
-        return article.value.photo
-    } else {
-        return getImgUrl("article-service", article.value.photo)
-    }
-})
+
 //表单验证规则
 const rules = reactive<FormRules>({
     title: [

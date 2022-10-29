@@ -4,7 +4,7 @@
         <div class="user-normal-info">
             <p>
                 <h1>
-                    {{ user.nick || user.username }}
+                    <span>{{ user.nick || user.username }}</span>
                     <svg-icon v-if="user.sex && user.sex != 0" class="user-sex" :icon-class="user.sex == 1 ? 'sexm' : 'sexw'" />
                 </h1>
                 <el-button class="user-normal-follow-btn" v-if="user.id != userId" round :type="isWatch ? 'success' : 'primary'" @click="watchUserInfo" :loading="loading">{{ isWatch ? "取消关注" : "关注" }}</el-button>
@@ -18,7 +18,6 @@
                 <el-tag class="meta-item" effect="dark" round color="coral"> 评论 {{ meta.commentCount }} </el-tag>
                 <el-tag class="meta-item" effect="dark" round color="darkorange"> 收藏 {{ meta.collectionCount }} </el-tag>
             </div>
-           
         </div>
     </div>
 </template>
@@ -33,6 +32,8 @@ import { UserMeta } from "@/interface/comment/summary"
 import { watchUser, watchStatus } from "@/api/user/watch"
 import {dateFormatter}from "@/utils/converter"
 import { random } from "lodash"
+import { getImgUrl } from "@/utils/converter"
+
 
 const store = useStore()
 const props = defineProps<{
@@ -42,7 +43,7 @@ const props = defineProps<{
 
 const photo = computed(() => {
     if (props.user) {
-        return `${process.env.VUE_APP_BASE_API}/user-service${props.user.photo}`
+        return getImgUrl("user-service", props.user.photo,false)
     }
 })
 const isWatch = ref(false)
@@ -79,7 +80,8 @@ function status() {
 }
 
 watch(props, (newVal) => {
-    props.user = newVal
+    props.user = newVal.user
+    props.meta = newVal.meta
     status()
 })
 

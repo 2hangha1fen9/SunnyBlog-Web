@@ -105,7 +105,6 @@ function jumpTag(tagName: string) {
 const show = ref(false)
 function showAside() {
     show.value = !show.value
-    console.log(show.value)
 }
 </script>
 
@@ -117,6 +116,10 @@ function showAside() {
     margin: 0 auto;
     position: relative;
     margin-bottom: 50px;
+}
+
+.detail-container::-webkit-scrollbar {
+    display: none;
 }
 
 /* 内容 */
@@ -135,7 +138,6 @@ function showAside() {
 .pure-cover,
 .img-cover {
     max-width: 100%;
-    z-index: 99;
 }
 
 /* 具有封面的Header */
@@ -148,6 +150,7 @@ function showAside() {
     transition: all 0.5s;
     animation: header-effect 1s;
     margin-bottom: 20px;
+    text-align: center;
 }
 .cover-img-meta {
     color: white;
@@ -296,6 +299,7 @@ function showAside() {
 
 /* 评论视图 */
 .comment-card {
+    box-sizing: border-box;
     width: 820px;
     max-width: 100%;
     margin-top: 20px;

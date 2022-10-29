@@ -1,6 +1,7 @@
 // 侧边栏收起样式
 .show-aside {
     display: block !important;
+    
 }
 // 侧边栏显示按钮
 .float-menu {
@@ -53,18 +54,15 @@
     // 头部菜单
     .right-container {
         width: 100% !important;
-        justify-content: space-between !important;
+        justify-content: flex-end !important;
     }
 
     // 分区菜单
     .menu {
         justify-content: flex-start !important;
     }
-    // 文章详情
-    .main-container {
-        overflow: hidden !important;
-    }
 
+    //文章详情按钮
     .article-btns {
         z-index: 9999 !important;
         margin-left: -20px;

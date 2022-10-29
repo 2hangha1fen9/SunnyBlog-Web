@@ -4,7 +4,7 @@
             <Avatar class="user-img-avatar" :photo="photo" :showUsername="false" />
             <div class="user-img-nick">
                 <p>
-                    {{ user.nick || user.username }}
+                    <span>{{ user.nick || user.username }}</span>
                     <svg-icon v-if="user.sex && user.sex != 0" class="user-sex" :icon-class="user.sex == 1 ? 'sexm' : 'sexw'" />
                     <el-button v-if="user.id != userId" round size="small" :type="isWatch ? 'success' : 'primary'" @click="watchUserInfo" :loading="loading">{{ isWatch ? "取消关注" : "关注" }}</el-button>
                 </p>
@@ -42,12 +42,12 @@ const props = defineProps<{
 
 const cover = computed(() => {
     if (props.user) {
-        return getImgUrl("user-service", props.user.cover)
+        return getImgUrl("user-service", props.user.cover, false)
     }
 })
 const photo = computed(() => {
     if (props.user) {
-        return getImgUrl("user-service", props.user.photo)
+        return getImgUrl("user-service", props.user.photo, false)
     }
 })
 const isWatch = ref(false)
@@ -84,7 +84,8 @@ function status() {
 }
 
 watch(props, (newVal) => {
-    props.user = newVal
+    props.user = newVal.user
+    props.meta = newVal.meta
     status()
 })
 </script>

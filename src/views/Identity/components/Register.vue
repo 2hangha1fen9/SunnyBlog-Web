@@ -206,7 +206,7 @@ async function handleRegister(form: FormInstance) {
                         ElMessage.success(data.result)
                         router.push("/identity/login")
                     } else {
-                        ElMessage.warning(data.result)
+                        ElMessage.warning(data.emssage)
                     }
                     loading.value = false
                 })

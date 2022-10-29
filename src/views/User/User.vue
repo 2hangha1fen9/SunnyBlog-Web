@@ -1,11 +1,7 @@
 <template>
-    <div v-show="user.cover">
-        <ImgCover :user="user" :meta="meta" />
-    </div>
+    <ImgCover v-if="user.cover" :user="user" :meta="meta" />
     <div class="user-container">
-        <div v-show="!user.cover">
-            <NormalCover :user="user" :meta="meta" />
-        </div>
+        <NormalCover v-if="!user.cover" :user="user" :meta="meta" />
         <div class="user-tab reactive-main">
             <el-menu class="menu" mode="horizontal" router :ellipsis="true" :default-active="defaultActive">
                 <el-menu-item :index="`/user/${uid}/article`" style="background: none">

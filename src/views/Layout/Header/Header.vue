@@ -3,20 +3,9 @@
         <div class="left-container">
             <svg-icon icon-class="sunny" id="logo" @click="router.push('/')" />
             <h3 @click="router.push('/index')" style="cursor: pointer">SunnyBlog</h3>
-            <el-menu class="links" mode="horizontal" router :ellipsis="true">
-                <!-- <el-menu-item index="/index" style="background: none">首页</el-menu-item>
-                <el-menu-item index="/rank" style="background: none">排行榜</el-menu-item>
-                <el-menu-item index="/rank" style="background: none">开源</el-menu-item> -->
-            </el-menu>
+            <SearchBar />
         </div>
         <div class="right-container">
-            <SearchBar />
-
-            <!-- 创作中心 -->
-            <el-button type="primary" @click="jumpCreation">
-                <svg-icon icon-class="creation" />
-                创作中心
-            </el-button>
             <!-- 头像 -->
             <el-switch v-model="isDark" class="dark-btn" :inactive-icon="Sunny" :active-icon="Moon" :inline-prompt="true" />
             <svg-icon v-if="isValid" class="notify-btn" icon-class="notify" @click="router.push('/notification')">消息</svg-icon>
@@ -26,7 +15,7 @@
                         <Avatar :photo="photo" :username="username" :showUsername="false"></Avatar>
                     </template>
                     <template #default>
-                        <el-menu class="dropdown-menu" active-text-color="var(--el-text-color-primary)" >
+                        <el-menu class="dropdown-menu" active-text-color="var(--el-text-color-primary)">
                             <el-menu-item index="0"><a :href="`/user/${userId}`" style="text-decoration: none; height: 100%; width: 100%; color: var(--el-text-color-primary)">个人主页</a></el-menu-item>
                             <el-menu-item index="1" @click="router.push('/setting')">用户设置</el-menu-item>
                             <el-menu-item index="2" @click="toggleState">{{ isValid ? "登出" : "登录" }}</el-menu-item>
@@ -34,7 +23,11 @@
                     </template>
                 </el-popover>
             </p>
-
+            <!-- 创作中心 -->
+            <el-button type="primary" @click="jumpCreation" round>
+                <svg-icon icon-class="creation" />
+                创作中心
+            </el-button>
             <el-button v-if="!isValid" round class="d" @click="toggleState">{{ isValid ? "登出" : "登录" }}</el-button>
         </div>
     </header>
@@ -154,7 +147,6 @@ onMounted(() => {
 }
 
 .header-up {
-    position: fixed;
     width: 100%;
     opacity: 1;
     transform: translateY(-120px);

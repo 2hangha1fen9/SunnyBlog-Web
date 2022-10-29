@@ -37,6 +37,7 @@ import { Article } from "@/interface/article/article"
 import { Response } from "@/interface/common/response"
 import { likeArticle } from "@/api/comment/like"
 import { ElMessage } from "element-plus"
+import { getImgUrl } from "@/utils/converter"
 
 const instance = getCurrentInstance()
 const router = useRouter()
@@ -46,7 +47,7 @@ const props = defineProps<{
 }>()
 
 function getArticlePhoto(path) {
-    return `${process.env.VUE_APP_BASE_API}/article-service${path}`
+    return getImgUrl("article-service", path,false)
 }
 //调用region组件的跳转方法
 function jumpRegion(region) {

@@ -109,8 +109,8 @@ function checkUsername(rule: unknown, value: string, callback: unknown) {
         }
     } else {
         if (loginData.client_id === "password") {
-            if (value.length < 6 || value.length > 20) {
-                return callback(new Error("登录名长度为6~20个字符"))
+            if (value.length < 5 || value.length > 20) {
+                return callback(new Error("登录名长度为5~20个字符"))
             }
         } else {
             if (vcData.type === "phone" && !/^1[3|4|5|7|8|9]\d{9}$/.test(value)) {
